@@ -1,0 +1,22 @@
+name: food_control_app
+description: An app for keep tracking food we have in our home
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+dependencies:
+  cloud_firestore: ^4.7.0
+  equatable: ^2.0.5
+  firebase_auth: ^4.6.0
+  firebase_core: ^2.12.0
+  firebase_core_platform_interface: ^4.8.0
+  google_sign_in: ^6.1.0
+  meta: ^1.8.0
+dev_dependencies:
+  mocktail: ^0.3.0
+  flutter_test:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.4
+  very_good_analysis: ^4.0.0+1
+  firebase_auth_platform_interface: ^6.15.0
