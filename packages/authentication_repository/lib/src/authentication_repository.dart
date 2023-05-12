@@ -83,6 +83,5 @@ class SignUpWithEmailAndPasswordFailure implements Exception {
     }
   }
 
-  /// The associated error message.
   final String message;
 }
