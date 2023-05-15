@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:authentication_repository/src/models/models.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationRepository {
   AuthenticationRepository({
@@ -27,7 +28,8 @@ class AuthenticationRepository {
             .doc(firebaseUser.uid)
             .get();
 
-        final user = User.fromSnapshot(userDataSnapshot);
+        final user =
+            User.fromSnapshotAndFirebaseUser(userDataSnapshot, firebaseUser);
         return user;
       }
     });
@@ -35,6 +37,22 @@ class AuthenticationRepository {
 
   User get currentUser {
     return _cache.read<User>(key: userCacheKey) ?? User.empty;
+  }
+
+  Future<void> loginWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on firebase_auth.FirebaseAuthException catch (error) {
+      throw LogInWithEmailAndPasswordFailure.fromCode(error.code);
+    } catch (_) {
+      throw const LogInWithEmailAndPasswordFailure();
+    }
   }
 
   /// Performs operations which can throw errors.
@@ -57,9 +75,29 @@ class AuthenticationRepository {
       throw const SignUpWithEmailAndPasswordFailure();
     }
   }
+
+  Future<void> logOut() async {
+    try {
+      await Future.wait([_firebaseAuth.signOut()]);
+    } catch (_) {
+      throw LogOutFailure();
+    }
+  }
+
+  Future<void> _writeTokenToLocalStorage(String token) async {
+    final storage = await SharedPreferences.getInstance();
+
+    // Write data
+    await storage.setString('__current_user_token__', token);
+  }
 }
 
-class SignUpWithEmailAndPasswordFailure implements Exception {
+abstract class AuthenticationRepositoryFailure implements Exception {
+  String get message => '';
+}
+
+class SignUpWithEmailAndPasswordFailure
+    implements AuthenticationRepositoryFailure {
   /// {@macro sign_up_with_email_and_password_failure}
   const SignUpWithEmailAndPasswordFailure([
     this.message = 'An unknown exception occurred when trying to sign up.',
@@ -95,10 +133,12 @@ class SignUpWithEmailAndPasswordFailure implements Exception {
     }
   }
 
+  @override
   final String message;
 }
 
-class LogInWithEmailAndPasswordFailure implements Exception {
+class LogInWithEmailAndPasswordFailure
+    implements AuthenticationRepositoryFailure {
   /// {@macro log_in_with_email_and_password_failure}
   const LogInWithEmailAndPasswordFailure([
     this.message = 'An unknown exception occurred.',
@@ -129,11 +169,11 @@ class LogInWithEmailAndPasswordFailure implements Exception {
     }
   }
 
-  /// The associated error message.
+  @override
   final String message;
 }
 
-class LogInWithGoogleFailure implements Exception {
+class LogInWithGoogleFailure implements AuthenticationRepositoryFailure {
   /// {@macro log_in_with_google_failure}
   const LogInWithGoogleFailure([
     this.message = 'An unknown exception occurred.',
@@ -180,7 +220,7 @@ class LogInWithGoogleFailure implements Exception {
     }
   }
 
-  /// The associated error message.
+  @override
   final String message;
 }
 

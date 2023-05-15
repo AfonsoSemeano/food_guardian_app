@@ -23,6 +23,7 @@ dependencies:
   meta: ^1.8.0
   authentication_repository:
     path: packages/authentication_repository
+  accordion: ^2.5.1
 
 dev_dependencies:
   bloc_test: ^9.1.1

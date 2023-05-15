@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/app/bloc/app_bloc.dart';
 import 'package:food_control_app/authentication/views/authentication_page.dart';
+import 'package:food_control_app/home/views/home_page.dart';
+import 'package:food_control_app/home/views/splash_page.dart';
 import 'package:food_control_app/l10n/l10n.dart';
 import 'package:food_control_app/theme.dart';
 
@@ -19,7 +21,11 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
       value: _authenticationRepository,
-      child: AppView(),
+      child: BlocProvider(
+        create: (context) =>
+            AppBloc(authenticationRepository: _authenticationRepository),
+        child: AppView(),
+      ),
     );
   }
 }
@@ -37,10 +43,12 @@ class AppView extends StatelessWidget {
         state: context.select((AppBloc bloc) => bloc.state.status),
         onGeneratePages: (state, pages) {
           switch (state) {
-            case AppStatus.authenticated:
-              return [AuthenticationPage.page()];
             case AppStatus.unauthenticated:
-              return [];
+              return [AuthenticationPage.page()];
+            case AppStatus.authenticated:
+              return [HomePage.page()];
+            case AppStatus.fetching:
+              return [SplashPage.page()];
           }
         },
       ),

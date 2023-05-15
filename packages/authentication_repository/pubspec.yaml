@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.18.0 <3.0.0"
 dependencies:
   cache:
-      path: ../cache
+    path: ../cache
   cloud_firestore: ^4.7.0
   equatable: ^2.0.5
   firebase_auth: ^4.6.0
@@ -15,6 +15,7 @@ dependencies:
   firebase_core_platform_interface: ^4.8.0
   google_sign_in: ^6.1.0
   meta: ^1.8.0
+  shared_preferences: ^2.1.1
 dev_dependencies:
   mocktail: ^0.3.0
   flutter_test:

@@ -17,7 +17,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     emit(
       state.copyWith(
         isLogin: isLogin,
-        confirmPassword: const ConfirmPassword.pure(),
+        confirmPassword: ConfirmPassword.pure(password: state.password.value),
+        errorMessage: '',
       ),
     );
   }
@@ -49,14 +50,36 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> submitButtonPressed() async {
-    if (Formz.validate([state.email, state.password, state.confirmPassword])) {
+    if (!Formz.validate([state.email, state.password])) {
+      return;
+    }
+    if (!state.isLogin && !Formz.validate([state.confirmPassword])) {
       return;
     }
     emit(state.copyWith(submissionStatus: FormzSubmissionStatus.inProgress));
-    try {} on LogInWithEmailAndPasswordFailure catch (error) {}
-
-    emit(state.copyWith(submissionStatus: FormzSubmissionStatus.inProgress));
-    await Future.delayed(const Duration(seconds: 3), () {});
-    emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
+    try {
+      if (state.isLogin) {
+        await _authenticationRepository.loginWithEmailAndPassword(
+          email: state.email.value,
+          password: state.password.value,
+        );
+        emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
+      } else {
+        await _authenticationRepository.signUp(
+          email: state.email.value,
+          password: state.password.value,
+        );
+        // emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
+      }
+    } on AuthenticationRepositoryFailure catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: error.message,
+          submissionStatus: FormzSubmissionStatus.failure,
+        ),
+      );
+    } catch (_) {
+      emit(state.copyWith(submissionStatus: FormzSubmissionStatus.failure));
+    }
   }
 }

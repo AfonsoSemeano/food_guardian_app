@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/authentication/cubit/authentication_cubit.dart';
+import 'package:food_control_app/theme.dart';
 import 'package:formz/formz.dart';
 
 class AuthenticationForm extends StatelessWidget {
@@ -14,6 +15,7 @@ class AuthenticationForm extends StatelessWidget {
         _EmailInput(),
         _PasswordInput(),
         _ConfirmPasswordInput(),
+        _ErrorMessageText(),
         _SubmitButton(),
         _ChangeAuthTypeButton(),
       ],
@@ -136,6 +138,24 @@ class _ChangeAuthTypeButton extends StatelessWidget {
               .read<AuthenticationCubit>()
               .authTypeChanged(isLogin: !state.isLogin),
           child: Text(state.isLogin ? 'Change to Register' : 'Change to Login'),
+        );
+      },
+    );
+  }
+}
+
+class _ErrorMessageText extends StatelessWidget {
+  const _ErrorMessageText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
+      buildWhen: (previous, current) =>
+          previous.errorMessage != current.errorMessage,
+      builder: (context, state) {
+        return Text(
+          state.errorMessage ?? '',
+          style: TextStyle(color: theme.colorScheme.error),
         );
       },
     );
