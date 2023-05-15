@@ -1,13 +1,21 @@
+import 'package:cache/cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:food_control_app/src/models/models.dart';
+import 'package:authentication_repository/src/models/models.dart';
+import 'package:meta/meta.dart';
 
 class AuthenticationRepository {
   AuthenticationRepository({
+    CacheClient? cache,
     firebase_auth.FirebaseAuth? firebaseAuth,
-  }) : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
+  })  : _cache = cache ?? CacheClient(),
+        _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
 
   final firebase_auth.FirebaseAuth _firebaseAuth;
+  final CacheClient _cache;
+
+  @visibleForTesting
+  static const userCacheKey = '__user_cache_key__';
 
   Stream<User> get user {
     return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
@@ -23,6 +31,10 @@ class AuthenticationRepository {
         return user;
       }
     });
+  }
+
+  User get currentUser {
+    return _cache.read<User>(key: userCacheKey) ?? User.empty;
   }
 
   /// Performs operations which can throw errors.
@@ -85,3 +97,92 @@ class SignUpWithEmailAndPasswordFailure implements Exception {
 
   final String message;
 }
+
+class LogInWithEmailAndPasswordFailure implements Exception {
+  /// {@macro log_in_with_email_and_password_failure}
+  const LogInWithEmailAndPasswordFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  /// Create an authentication message
+  /// from a firebase authentication exception code.
+  factory LogInWithEmailAndPasswordFailure.fromCode(String code) {
+    switch (code) {
+      case 'invalid-email':
+        return const LogInWithEmailAndPasswordFailure(
+          'Email is not valid or badly formatted.',
+        );
+      case 'user-disabled':
+        return const LogInWithEmailAndPasswordFailure(
+          'This user has been disabled. Please contact support for help.',
+        );
+      case 'user-not-found':
+        return const LogInWithEmailAndPasswordFailure(
+          'Email is not found, please create an account.',
+        );
+      case 'wrong-password':
+        return const LogInWithEmailAndPasswordFailure(
+          'Incorrect password, please try again.',
+        );
+      default:
+        return const LogInWithEmailAndPasswordFailure();
+    }
+  }
+
+  /// The associated error message.
+  final String message;
+}
+
+class LogInWithGoogleFailure implements Exception {
+  /// {@macro log_in_with_google_failure}
+  const LogInWithGoogleFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  /// Create an authentication message
+  /// from a firebase authentication exception code.
+  factory LogInWithGoogleFailure.fromCode(String code) {
+    switch (code) {
+      case 'account-exists-with-different-credential':
+        return const LogInWithGoogleFailure(
+          'Account exists with different credentials.',
+        );
+      case 'invalid-credential':
+        return const LogInWithGoogleFailure(
+          'The credential received is malformed or has expired.',
+        );
+      case 'operation-not-allowed':
+        return const LogInWithGoogleFailure(
+          'Operation is not allowed.  Please contact support.',
+        );
+      case 'user-disabled':
+        return const LogInWithGoogleFailure(
+          'This user has been disabled. Please contact support for help.',
+        );
+      case 'user-not-found':
+        return const LogInWithGoogleFailure(
+          'Email is not found, please create an account.',
+        );
+      case 'wrong-password':
+        return const LogInWithGoogleFailure(
+          'Incorrect password, please try again.',
+        );
+      case 'invalid-verification-code':
+        return const LogInWithGoogleFailure(
+          'The credential verification code received is invalid.',
+        );
+      case 'invalid-verification-id':
+        return const LogInWithGoogleFailure(
+          'The credential verification ID received is invalid.',
+        );
+      default:
+        return const LogInWithGoogleFailure();
+    }
+  }
+
+  /// The associated error message.
+  final String message;
+}
+
+/// Thrown during the logout process if a failure occurs.
+class LogOutFailure implements Exception {}

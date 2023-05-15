@@ -2,5 +2,5 @@ import 'package:food_control_app/app/app.dart';
 import 'package:food_control_app/bootstrap.dart';
 
 void main() {
-  bootstrap(() => const App());
+  bootstrap((authRepository) => App(authenticationRepository: authRepository));
 }

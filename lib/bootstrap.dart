@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
+import 'package:food_control_app/authentication/cubit/authentication_cubit.dart';
 import 'package:food_control_app/firebase_options.dart';
 
 class AppBlocObserver extends BlocObserver {
@@ -15,6 +17,20 @@ class AppBlocObserver extends BlocObserver {
     log('onChange(${bloc.runtimeType}, $change)');
   }
 
+  // @override
+  // void onTransition(Bloc bloc, Transition transition) {
+  //   super.onTransition(bloc, transition);
+  //   log('onTransition(${bloc.runtimeType}, $transition)');
+
+  //   // You can perform additional operations based on the bloc and transition
+  //   if (bloc is AuthenticationCubit) {
+  //     if (transition.nextState is AuthenticationState) {
+  //       final nextState = transition.nextState as AuthenticationState;
+  //       log('onTransition - AuthenticationCubit - nextState: $nextState');
+  //     }
+  //   }
+  // }
+
   @override
   void onError(BlocBase<dynamic> bloc, Object error, StackTrace stackTrace) {
     log('onError(${bloc.runtimeType}, $error, $stackTrace)');
@@ -22,19 +38,26 @@ class AppBlocObserver extends BlocObserver {
   }
 }
 
-Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
+Future<void> bootstrap(
+  FutureOr<Widget> Function(AuthenticationRepository authenticationRepository)
+      builder,
+) async {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
 
   Bloc.observer = const AppBlocObserver();
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  final authenticationRepository = AuthenticationRepository();
+
   await runZonedGuarded(
-    () async => runApp(await builder()),
+    () async => runApp(await builder(authenticationRepository)),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
   );
 }

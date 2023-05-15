@@ -21,6 +21,8 @@ dependencies:
   google_fonts: ^4.0.4
   intl: ^0.17.0
   meta: ^1.8.0
+  authentication_repository:
+    path: packages/authentication_repository
 
 dev_dependencies:
   bloc_test: ^9.1.1

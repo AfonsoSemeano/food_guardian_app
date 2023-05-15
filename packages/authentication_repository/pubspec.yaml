@@ -1,11 +1,13 @@
-name: food_control_app
-description: An app for keep tracking food we have in our home
+name: authentication_repository
+description: A repository connected with Firebase.
 version: 1.0.0+1
 publish_to: none
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
 dependencies:
+  cache:
+      path: ../cache
   cloud_firestore: ^4.7.0
   equatable: ^2.0.5
   firebase_auth: ^4.6.0
