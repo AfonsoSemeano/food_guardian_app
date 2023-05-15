@@ -24,6 +24,7 @@ dependencies:
   authentication_repository:
     path: packages/authentication_repository
   accordion: ^2.5.1
+  collection: ^1.17.0
 
 dev_dependencies:
   bloc_test: ^9.1.1

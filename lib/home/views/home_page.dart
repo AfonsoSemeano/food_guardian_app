@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/home/cubit/home_cubit.dart';
 import 'package:food_control_app/theme.dart';
 import 'package:food_control_app/user_profile/views/user_profile_content.dart';
+import 'package:food_control_app/manage_sections/views/manage_sections_page.dart';
+import 'package:food_control_app/user_space/views/views.dart';
 
 class HomePage extends StatefulWidget {
   static Page<void> page() => const MaterialPage<void>(child: HomePage());
@@ -27,6 +29,12 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => HomeCubit(0),
@@ -43,11 +51,12 @@ class _HomePageState extends State<HomePage>
             ),
             body: PageView(
               controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
                 context.read<HomeCubit>().changeTab(index);
               },
               children: const [
-                Center(child: Text('Your FoodSpace')),
+                Center(child: ManageSessions()),
                 Center(child: UserProfileContent()),
                 Center(child: Text('FoodSpaces')),
                 Center(child: Text('Share')),
