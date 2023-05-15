@@ -18,8 +18,12 @@ class UserProfileContent extends StatelessWidget {
         children: [
           Accordion(
             headerBorderRadius: 0,
-            contentBorderColor: Colors.grey,
             scaleWhenAnimating: false,
+            headerPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            rightIcon: Icon(
+              Icons.keyboard_arrow_down,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
             children: [
               AccordionSection(
                 paddingBetweenClosedSections: 2,
@@ -63,6 +67,11 @@ class _EndSessionButton extends StatelessWidget {
         onPressed: () {
           context.read<UserProfileCubit>().logOut();
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll<Color>(
+            Theme.of(context).colorScheme.secondary,
+          ),
+        ),
         child: Text('End Session'));
   }
 }

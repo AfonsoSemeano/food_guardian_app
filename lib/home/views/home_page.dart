@@ -34,7 +34,11 @@ class _HomePageState extends State<HomePage>
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-              title: Text('FoodGuardian'),
+              title: Text(
+                'FoodGuardian',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ),
               backgroundColor: Theme.of(context).primaryColor,
             ),
             body: PageView(
@@ -65,9 +69,11 @@ class _HomePageState extends State<HomePage>
                   );
                 },
                 backgroundColor: theme.primaryColor,
-                selectedItemColor: Colors.white, // Set the selected item color
+                selectedItemColor: Theme.of(context)
+                    .colorScheme
+                    .secondary, // Set the selected item color
                 unselectedItemColor:
-                    Colors.grey, // Set the unselected item color
+                    Colors.black, // Set the unselected item color
                 items: const [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.tab),

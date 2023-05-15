@@ -5,7 +5,24 @@ final theme = ThemeData(
   textTheme: GoogleFonts.openSansTextTheme(),
   primaryColorDark: const Color(0xFF0097A7),
   primaryColorLight: const Color(0xFFB2EBF2),
-  primaryColor: const Color(0xFF876339),
+  primaryColor: const Color(0xFFFFFFFF),
+  colorScheme: const ColorScheme.light(
+    secondary: Color(0xFF32CD32),
+    error: Colors.red,
+  ),
+  scaffoldBackgroundColor: const Color(0xFFE8F5E9),
+  inputDecorationTheme: InputDecorationTheme(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+  ),
+);
+
+final theme1 = ThemeData(
+  textTheme: GoogleFonts.openSansTextTheme(),
+  primaryColorDark: const Color(0xFF0097A7),
+  primaryColorLight: const Color(0xFFB2EBF2),
+  primaryColor: const Color(0xFFFFFFFF),
   colorScheme: const ColorScheme.light(
     secondary: Color(0xFF009688),
     error: Colors.red,
