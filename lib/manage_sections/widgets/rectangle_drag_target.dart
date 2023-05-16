@@ -27,14 +27,47 @@ class RectangleDragTarget extends StatelessWidget {
   }
 }
 
-class RedRectangle extends StatelessWidget {
+class RedRectangle extends StatefulWidget {
   const RedRectangle({super.key});
 
   @override
+  State<RedRectangle> createState() => _RedRectangleState();
+}
+
+class _RedRectangleState extends State<RedRectangle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    final curvedAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn);
+    _animation = Tween<double>(begin: 20.0, end: 50.0).animate(curvedAnimation);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      color: Colors.red,
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          height: _animation.value,
+        );
+      },
     );
   }
 }

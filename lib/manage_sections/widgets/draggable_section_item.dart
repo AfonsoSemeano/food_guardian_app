@@ -14,29 +14,33 @@ class DraggableSectionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<Section>(
-      maxSimultaneousDrags: state.selectedSectionIndex == null ? 1 : 0,
-      child: SectionItem(section),
-      feedback: Card(
-        color: Colors.blue, // Customize the background color
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            section.name,
-            style: const TextStyle(
-              color: Colors.white, // Customize the text color
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 24.0),
+      child: Draggable<Section>(
+        maxSimultaneousDrags: state.selectedSectionIndex == null ? 1 : 0,
+        child: SectionItem(section),
+        feedback: Card(
+          color: Colors.blue, // Customize the background color
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              section.name,
+              style: const TextStyle(
+                color: Colors.white, // Customize the text color
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
+        data: section,
+        childWhenDragging: SizedBox(),
+        onDragStarted: () =>
+            context.read<ManageSectionsCubit>().changeSelectedIndex(section),
+        onDragEnd: (_) =>
+            context.read<ManageSectionsCubit>().changeSelectedIndex(null),
       ),
-      data: section,
-      childWhenDragging: SizedBox(),
-      onDragStarted: () =>
-          context.read<ManageSectionsCubit>().changeSelectedIndex(section),
-      onDragEnd: (_) =>
-          context.read<ManageSectionsCubit>().changeSelectedIndex(null),
     );
   }
 }
