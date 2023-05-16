@@ -25,18 +25,40 @@ class ManageSessions extends StatelessWidget {
             previous.selectedSectionIndex != current.selectedSectionIndex,
         builder: (context, state) {
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ...state.orderedSections
-                  .mapIndexed(
-                    (index, element) => [
-                      if (state.selectedSectionIndex != index)
-                        RectangleDragTarget(index: index),
-                      DraggableSectionItem(element, state),
-                    ],
-                  )
-                  .expand((widgets) => widgets),
-              RectangleDragTarget(index: state.orderedSections.length),
+              Text(
+                'Manage Sessions',
+                style: TextStyle(
+                    fontSize:
+                        Theme.of(context).textTheme.headlineSmall?.fontSize),
+              ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                child: Text('Grab a section and change its order.'),
+              ),
+              Container(
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.symmetric(horizontal: 6.0),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.secondary),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...state.orderedSections
+                        .mapIndexed(
+                          (index, element) => [
+                            if (state.selectedSectionIndex != index)
+                              RectangleDragTarget(index: index),
+                            DraggableSectionItem(element, state),
+                          ],
+                        )
+                        .expand((widgets) => widgets),
+                    RectangleDragTarget(index: state.orderedSections.length),
+                  ],
+                ),
+              ),
             ],
           );
         },

@@ -16,26 +16,18 @@ class DraggableSectionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 24.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Draggable<Section>(
         maxSimultaneousDrags: state.selectedSectionIndex == null ? 1 : 0,
         child: SectionItem(section),
-        feedback: Card(
-          color: Colors.blue, // Customize the background color
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              section.name,
-              style: const TextStyle(
-                color: Colors.white, // Customize the text color
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+        feedback: Container(
+          width: 300.0,
+          child: Card(
+            child: SectionItem(section),
           ),
         ),
         data: section,
-        childWhenDragging: SizedBox(),
+        childWhenDragging: const SizedBox(),
         onDragStarted: () =>
             context.read<ManageSectionsCubit>().changeSelectedIndex(section),
         onDragEnd: (_) =>

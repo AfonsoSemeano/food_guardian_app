@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_control_app/authentication/cubit/authentication_cubit.dart';
 import 'package:food_control_app/firebase_options.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -39,7 +40,8 @@ class AppBlocObserver extends BlocObserver {
 }
 
 Future<void> bootstrap(
-  FutureOr<Widget> Function(AuthenticationRepository authenticationRepository)
+  FutureOr<Widget> Function(AuthenticationRepository authenticationRepository,
+          FoodSpacesRepository foodSpacesRepository)
       builder,
 ) async {
   FlutterError.onError = (details) {
@@ -55,9 +57,11 @@ Future<void> bootstrap(
   );
 
   final authenticationRepository = AuthenticationRepository();
+  final foodSpacesRepository = FoodSpacesRepository();
 
   await runZonedGuarded(
-    () async => runApp(await builder(authenticationRepository)),
+    () async =>
+        runApp(await builder(authenticationRepository, foodSpacesRepository)),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
   );
 }

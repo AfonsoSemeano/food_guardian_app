@@ -57,7 +57,8 @@ class AuthenticationRepository {
 
   /// Performs operations which can throw errors.
   /// Must be wrapped in a try-catch block to handle exceptions.
-  Future<void> signUp({required String email, required String password}) async {
+  Future<String> signUp(
+      {required String email, required String password}) async {
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -69,6 +70,9 @@ class AuthenticationRepository {
         'birthdayDate': null,
         'gender': null,
       });
+      final foodSpacesRef = FirebaseFirestore.instance.collection('foodSpaces');
+      final newFoodSpaceRef = foodSpacesRef.doc();
+      return userCredential.user?.uid as String;
     } on firebase_auth.FirebaseAuthException catch (error) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(error.code);
     } catch (_) {

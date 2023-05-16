@@ -17,8 +17,7 @@ class RectangleDragTarget extends StatelessWidget {
         return candidates.length > 0
             ? RedRectangle()
             : Container(
-                decoration: BoxDecoration(border: Border.all()),
-                child: Text('DRAG TO ME'),
+                height: 20.0,
               );
       },
       onAccept: (data) =>
@@ -49,7 +48,7 @@ class _RedRectangleState extends State<RedRectangle>
     );
     final curvedAnimation =
         CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn);
-    _animation = Tween<double>(begin: 20.0, end: 50.0).animate(curvedAnimation);
+    _animation = Tween<double>(begin: 20.0, end: 75.0).animate(curvedAnimation);
     _controller.forward();
   }
 

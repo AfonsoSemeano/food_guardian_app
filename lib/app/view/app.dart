@@ -8,19 +8,30 @@ import 'package:food_control_app/home/views/home_page.dart';
 import 'package:food_control_app/home/views/splash_page.dart';
 import 'package:food_control_app/l10n/l10n.dart';
 import 'package:food_control_app/theme.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 
 class App extends StatelessWidget {
   const App({
     super.key,
     required AuthenticationRepository authenticationRepository,
-  }) : _authenticationRepository = authenticationRepository;
+    required FoodSpacesRepository foodSpacesRepository,
+  })  : _authenticationRepository = authenticationRepository,
+        _foodSpacesRepository = foodSpacesRepository;
 
   final AuthenticationRepository _authenticationRepository;
+  final FoodSpacesRepository _foodSpacesRepository;
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _authenticationRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(
+          value: _authenticationRepository,
+        ),
+        RepositoryProvider.value(
+          value: _foodSpacesRepository,
+        ),
+      ],
       child: BlocProvider(
         create: (context) =>
             AppBloc(authenticationRepository: _authenticationRepository),
