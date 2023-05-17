@@ -13,3 +13,4 @@ dependencies:
   firebase_core_platform_interface: ^4.8.0
   cloud_firestore: ^4.7.0
   shared_preferences: ^2.1.1
+  equatable: ^2.0.5

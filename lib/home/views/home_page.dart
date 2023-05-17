@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_control_app/home/cubit/home_cubit.dart';
+import 'package:food_control_app/home/bloc/home_bloc.dart';
 import 'package:food_control_app/theme.dart';
 import 'package:food_control_app/user_profile/views/user_profile_content.dart';
 import 'package:food_control_app/manage_sections/views/manage_sections_page.dart';
 import 'package:food_control_app/user_space/views/views.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 
 class HomePage extends StatefulWidget {
   static Page<void> page() => const MaterialPage<void>(child: HomePage());
@@ -23,7 +24,6 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _pageController = PageController();
   }
@@ -37,8 +37,12 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeCubit(0),
-      child: BlocBuilder<HomeCubit, HomeState>(
+      create: (context) =>
+          HomeBloc(foodSpacesRepository: context.read<FoodSpacesRepository>()),
+      child: BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) =>
+            previous.tabIndex != current.tabIndex ||
+            previous.foodSpace?.id != current.foodSpace?.id,
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
@@ -53,7 +57,7 @@ class _HomePageState extends State<HomePage>
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
-                context.read<HomeCubit>().changeTab(index);
+                context.read<HomeBloc>().add(TabChanged(index));
               },
               children: const [
                 Center(child: ManageSessions()),
@@ -70,7 +74,7 @@ class _HomePageState extends State<HomePage>
               child: BottomNavigationBar(
                 currentIndex: state.tabIndex,
                 onTap: (index) {
-                  context.read<HomeCubit>().changeTab(index);
+                  context.read<HomeBloc>().add(TabChanged(index));
                   _pageController.animateToPage(
                     index,
                     duration: Duration(milliseconds: 300),
