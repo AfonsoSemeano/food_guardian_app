@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart';
@@ -8,8 +9,11 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc({required FoodSpacesRepository foodSpacesRepository})
-      : _foodSpacesRepository = foodSpacesRepository,
+  HomeBloc({
+    required FoodSpacesRepository foodSpacesRepository,
+    required AuthenticationRepository authenticationRepository,
+  })  : _foodSpacesRepository = foodSpacesRepository,
+        _authenticationRepository = authenticationRepository,
         super(const HomeState(0, null)) {
     on<_FoodSpaceChanged>(_onFoodSpaceChanged);
     on<TabChanged>(_onTabChanged);
@@ -18,10 +22,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _foodSpacesRepository.foodSpaceStream.listen((foodSpace) {
       add(_FoodSpaceChanged(foodSpace));
     });
+    _authenticationRepository.user.last
+        .then((user) => _foodSpacesRepository.fetchFoodSpace(user.id));
   }
 
   final FoodSpacesRepository _foodSpacesRepository;
   late final StreamSubscription<FoodSpace?> _foodSpaceSubscription;
+  final AuthenticationRepository _authenticationRepository;
 
   void _onFoodSpaceChanged(_FoodSpaceChanged event, Emitter<HomeState> emit) {
     emit(state.copyWith(foodSpace: event.foodSpace));

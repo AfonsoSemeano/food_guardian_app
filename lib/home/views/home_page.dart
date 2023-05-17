@@ -1,3 +1,4 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -37,8 +38,10 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          HomeBloc(foodSpacesRepository: context.read<FoodSpacesRepository>()),
+      create: (context) => HomeBloc(
+        foodSpacesRepository: context.read<FoodSpacesRepository>(),
+        authenticationRepository: context.read<AuthenticationRepository>(),
+      ),
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
             previous.tabIndex != current.tabIndex ||
