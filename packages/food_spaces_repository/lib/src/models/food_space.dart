@@ -18,4 +18,19 @@ class FoodSpace extends Equatable {
 
   @override
   List<Object?> get props => [userOwnerId, allItems, joinedUsersIds, sections];
+
+  FoodSpace copyWith({
+    String? id,
+    String? userOwnerId,
+    List<Item>? allItems,
+    List<String>? joinedUsersIds,
+    List<Section>? sections,
+  }) {
+    return FoodSpace(
+        id: id ?? this.id,
+        userOwnerId: userOwnerId ?? this.userOwnerId,
+        allItems: allItems ?? this.allItems,
+        joinedUsersIds: joinedUsersIds ?? this.joinedUsersIds,
+        sections: sections ?? this.sections);
+  }
 }

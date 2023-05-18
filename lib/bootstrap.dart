@@ -57,7 +57,8 @@ Future<void> bootstrap(
   );
 
   final authenticationRepository = AuthenticationRepository();
-  final foodSpacesRepository = FoodSpacesRepository();
+  final foodSpacesRepository =
+      FoodSpacesRepository(authenticationRepository: authenticationRepository);
 
   await runZonedGuarded(
     () async =>

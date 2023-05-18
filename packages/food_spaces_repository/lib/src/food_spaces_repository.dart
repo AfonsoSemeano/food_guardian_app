@@ -1,3 +1,4 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:cache/cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart';
@@ -5,13 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 class FoodSpacesRepository {
-  FoodSpacesRepository({CacheClient? cacheClient})
-      : _cacheClient = cacheClient ?? CacheClient() {
+  FoodSpacesRepository(
+      {CacheClient? cacheClient,
+      required AuthenticationRepository authenticationRepository})
+      : _cacheClient = cacheClient ?? CacheClient(),
+        _authenticationRepository = authenticationRepository {
     _foodSpaceStreamController = StreamController<FoodSpace?>.broadcast();
   }
 
   final CacheClient _cacheClient;
   late StreamController<FoodSpace?> _foodSpaceStreamController;
+  final AuthenticationRepository _authenticationRepository;
 
   Stream<FoodSpace?> get foodSpaceStream => _foodSpaceStreamController.stream;
 
@@ -19,29 +24,56 @@ class FoodSpacesRepository {
     await FirebaseFirestore.instance.collection('foodSpaces');
   }
 
-  Future<FoodSpace> _fetchFoodSpace(
-      String foodSpaceId, String loggedUserId) async {
-    final foodSpaceFirebase = await FirebaseFirestore.instance
-        .collection('foodSpaces')
-        .doc(foodSpaceId)
-        .get();
-
-    if (foodSpaceFirebase.exists) {
-      final foodSpaceData = foodSpaceFirebase.data()!;
-      return _buildFoodSpaceOnRawData(foodSpaceFirebase.id, foodSpaceData);
-    } else {
-      final foodSpacesCollectionSnap =
-          await FirebaseFirestore.instance.collection('foodSpaces').get();
-      FoodSpace? foundSpace;
-      for (final element in foodSpacesCollectionSnap.docs) {
-        final data = element.data();
-        if (data['ownerId'] == loggedUserId) {
-          return _buildFoodSpaceOnRawData(element.id, data);
-        }
+  Future<void> storeSections(List<Section> newSections) async {
+    FoodSpace? newestFoodSpace = await foodSpaceStream.last;
+    if (newestFoodSpace != null) {
+      _foodSpaceStreamController
+          .add(newestFoodSpace.copyWith(sections: newSections));
+      try {
+        await FirebaseFirestore.instance
+            .collection('foodSpaces')
+            .doc(newestFoodSpace.id)
+            .update({
+          'sections': newSections
+              .map((s) => {'name': s.name, 'index': s.index})
+              .toList(),
+        });
+      } catch (e) {
+        _foodSpaceStreamController
+            .add(newestFoodSpace.copyWith(sections: newestFoodSpace.sections));
+        throw FoodSpacesRepositoryFailure();
       }
-      throw FoodSpacesRepositoryFailure(
-          'The user doesn\'t have a food space! Make you sure you created one before calling this method.');
     }
+  }
+
+  Future<FoodSpace> _fetchFoodSpace(String foodSpaceId) async {
+    if (foodSpaceId.isNotEmpty) {
+      final foodSpaceFirebase = await FirebaseFirestore.instance
+          .collection('foodSpaces')
+          .doc(foodSpaceId)
+          .get();
+
+      if (foodSpaceFirebase.exists) {
+        final foodSpaceData = foodSpaceFirebase.data()!;
+        return _buildFoodSpaceOnRawData(foodSpaceFirebase.id, foodSpaceData);
+      }
+    }
+    return await getDefaultFoodSpace();
+  }
+
+  Future<FoodSpace> getDefaultFoodSpace() async {
+    final foodSpacesCollectionSnap =
+        await FirebaseFirestore.instance.collection('foodSpaces').get();
+    FoodSpace? foundSpace;
+    for (final element in foodSpacesCollectionSnap.docs) {
+      final data = element.data();
+      final loggedUserId = (await _authenticationRepository.user.last).id;
+      if (data['ownerId'] == loggedUserId) {
+        return _buildFoodSpaceOnRawData(element.id, data);
+      }
+    }
+    throw FoodSpacesRepositoryFailure(
+        'The user doesn\'t have a food space! Make you sure you created one before calling this method.');
   }
 
   FoodSpace _buildFoodSpaceOnRawData(
@@ -61,29 +93,24 @@ class FoodSpacesRepository {
     );
   }
 
-  Future<void> saveFoodSpaceId(String foodSpaceId, String? loggedUserId) async {
+  Future<void> saveFoodSpaceId(String foodSpaceId) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.setString('currentFoodSpaceId', foodSpaceId);
 
-    if (loggedUserId == null || loggedUserId.isEmpty) {
-      _foodSpaceStreamController.add(null);
-      _cacheClient.write(key: 'currentFoodSpace', value: '');
-      return;
-    }
-    final foundFoodspace = await _fetchFoodSpace(foodSpaceId, loggedUserId);
+    final foundFoodspace = await _fetchFoodSpace(foodSpaceId);
     _cacheClient.write(key: 'currentFoodSpace', value: foundFoodspace);
 
     _foodSpaceStreamController.add(foundFoodspace);
   }
 
-  Future<FoodSpace?> fetchFoodSpace(String loggedUserId) async {
+  Future<FoodSpace?> fetchFoodSpace() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     final foundString = await sharedPreferences.getString('currentFoodSpaceId');
     FoodSpace foundFoodspace;
     if (foundString != null) {
-      foundFoodspace = await _fetchFoodSpace(foundString, loggedUserId);
+      foundFoodspace = await _fetchFoodSpace(foundString);
     } else {
-      foundFoodspace = await _fetchFoodSpace('', loggedUserId);
+      foundFoodspace = await _fetchFoodSpace('');
     }
     _cacheClient.write(key: 'currentFoodSpaceId', value: foundFoodspace);
     _foodSpaceStreamController.add(foundFoodspace);

@@ -2,11 +2,18 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:food_control_app/manage_sections/models/models.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart'
+    as food_repo;
 
 part 'manage_sections_state.dart';
 
 class ManageSectionsCubit extends Cubit<ManageSectionsState> {
-  ManageSectionsCubit() : super(ManageSectionsState());
+  ManageSectionsCubit(
+      {required food_repo.FoodSpacesRepository foodSpacesRepository})
+      : _foodSpacesRepository = foodSpacesRepository,
+        super(ManageSectionsState());
+
+  final food_repo.FoodSpacesRepository _foodSpacesRepository;
 
   void changeOrder(Section section, int newIndex) {
     final oldSections = [
@@ -28,6 +35,13 @@ class ManageSectionsCubit extends Cubit<ManageSectionsState> {
 
     _updateEachSectionOnPosition(oldSections);
     emit(state.copyWith(orderedSections: oldSections));
+    try {
+      _foodSpacesRepository.storeSections(
+        oldSections
+            .map((s) => food_repo.Section(name: s.name, index: s.index))
+            .toList(),
+      );
+    } catch (e) {}
   }
 
   void changeSelectedIndex(Section? selectedSection) {

@@ -37,86 +37,79 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeBloc(
-        foodSpacesRepository: context.read<FoodSpacesRepository>(),
-        authenticationRepository: context.read<AuthenticationRepository>(),
-      ),
-      child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) =>
-            previous.tabIndex != current.tabIndex ||
-            previous.foodSpace?.id != current.foodSpace?.id,
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'FoodGuardian',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-              backgroundColor: Theme.of(context).primaryColor,
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.tabIndex != current.tabIndex ||
+          previous.foodSpace?.id != current.foodSpace?.id,
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'FoodGuardian',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
-            body: PageView(
-              controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (index) {
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+          body: PageView(
+            controller: _pageController,
+            physics: NeverScrollableScrollPhysics(),
+            onPageChanged: (index) {
+              context.read<HomeBloc>().add(TabChanged(index));
+            },
+            children: const [
+              Center(child: UserSpace()),
+              Center(child: UserProfileContent()),
+              Center(child: Text('FoodSpaces')),
+              Center(child: Text('Share')),
+              Center(child: Text('Settings')),
+            ],
+          ),
+          bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: theme.primaryColor,
+            ),
+            child: BottomNavigationBar(
+              currentIndex: state.tabIndex,
+              onTap: (index) {
                 context.read<HomeBloc>().add(TabChanged(index));
+                _pageController.animateToPage(
+                  index,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.ease,
+                );
               },
-              children: const [
-                Center(child: ManageSessions()),
-                Center(child: UserProfileContent()),
-                Center(child: Text('FoodSpaces')),
-                Center(child: Text('Share')),
-                Center(child: Text('Settings')),
+              backgroundColor: theme.primaryColor,
+              selectedItemColor: Theme.of(context)
+                  .colorScheme
+                  .secondary, // Set the selected item color
+              unselectedItemColor:
+                  Colors.black, // Set the unselected item color
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.tab),
+                  label: 'Your Space',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.tab),
+                  label: 'FoodSpaces',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.tab),
+                  label: 'Share',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.tab),
+                  label: 'Settings',
+                ),
               ],
             ),
-            bottomNavigationBar: Theme(
-              data: Theme.of(context).copyWith(
-                canvasColor: theme.primaryColor,
-              ),
-              child: BottomNavigationBar(
-                currentIndex: state.tabIndex,
-                onTap: (index) {
-                  context.read<HomeBloc>().add(TabChanged(index));
-                  _pageController.animateToPage(
-                    index,
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.ease,
-                  );
-                },
-                backgroundColor: theme.primaryColor,
-                selectedItemColor: Theme.of(context)
-                    .colorScheme
-                    .secondary, // Set the selected item color
-                unselectedItemColor:
-                    Colors.black, // Set the unselected item color
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.tab),
-                    label: 'Your Space',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.tab),
-                    label: 'FoodSpaces',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.tab),
-                    label: 'Share',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.tab),
-                    label: 'Settings',
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -19,7 +19,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   final FoodSpacesRepository _foodSpacesRepository;
 
   void logOut() {
-    unawaited(_foodSpacesRepository.saveFoodSpaceId('', null));
+    unawaited(_foodSpacesRepository.saveFoodSpaceId(''));
     unawaited(_authenticationRepository.logOut());
   }
 }

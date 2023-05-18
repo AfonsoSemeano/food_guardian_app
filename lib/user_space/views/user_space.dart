@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_control_app/home/bloc/home_bloc.dart';
+import 'package:food_control_app/manage_sections/views/manage_sections_page.dart';
 import 'package:food_control_app/manage_sections/widgets/widgets.dart';
 
 class UserSpace extends StatefulWidget {
@@ -18,7 +21,7 @@ class _UserSpaceState extends State<UserSpace>
   @override
   void initState() {
     super.initState();
-    _sectionsTabController = TabController(length: 5, vsync: this);
+    _sectionsTabController = TabController(length: 6, vsync: this);
     _sectionsScrollController = ScrollController();
   }
 
@@ -43,7 +46,17 @@ class _UserSpaceState extends State<UserSpace>
               Tab(text: 'Tab 3'),
               Tab(text: 'Tab 4'),
               Tab(text: 'Tab 5'),
-              ElevatedButton(onPressed: () {}, child: Text('CLICK ME'))
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ManageSectionsPage(),
+                        settings:
+                            RouteSettings(arguments: context.read<HomeBloc>()),
+                      ),
+                    );
+                  },
+                  child: Text('CLICK ME'))
             ],
           ),
         ),
@@ -58,6 +71,7 @@ class _UserSpaceState extends State<UserSpace>
               Center(child: Text('Tab 3')),
               Center(child: Text('Tab 4')),
               Center(child: Text('Tab 5')),
+              Center(child: Text('No this cant happen'))
               // Add more tab content as needed
             ],
           ),

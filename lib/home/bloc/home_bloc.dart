@@ -11,9 +11,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required FoodSpacesRepository foodSpacesRepository,
-    required AuthenticationRepository authenticationRepository,
   })  : _foodSpacesRepository = foodSpacesRepository,
-        _authenticationRepository = authenticationRepository,
         super(const HomeState(0, null)) {
     on<_FoodSpaceChanged>(_onFoodSpaceChanged);
     on<TabChanged>(_onTabChanged);
@@ -22,13 +20,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _foodSpacesRepository.foodSpaceStream.listen((foodSpace) {
       add(_FoodSpaceChanged(foodSpace));
     });
-    _authenticationRepository.user.last
-        .then((user) => _foodSpacesRepository.fetchFoodSpace(user.id));
+    _foodSpacesRepository.fetchFoodSpace();
   }
 
   final FoodSpacesRepository _foodSpacesRepository;
   late final StreamSubscription<FoodSpace?> _foodSpaceSubscription;
-  final AuthenticationRepository _authenticationRepository;
 
   void _onFoodSpaceChanged(_FoodSpaceChanged event, Emitter<HomeState> emit) {
     emit(state.copyWith(foodSpace: event.foodSpace));

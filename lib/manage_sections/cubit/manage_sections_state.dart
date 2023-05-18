@@ -4,18 +4,16 @@ class ManageSectionsState extends Equatable {
   ManageSectionsState({
     List<Section>? newOrderedSections,
     this.selectedSectionIndex,
-  }) {
-    orderedSections = newOrderedSections ??
-        [
-          Section(name: 'Frigorífico', index: 0),
-          Section(name: 'Estante', index: 1),
-          Section(name: 'Congelador', index: 2),
-          Section(name: 'Especiarias', index: 3),
-        ];
-  }
+  }) : orderedSections = newOrderedSections ??
+            [
+              Section(name: 'Frigorífico', index: 0),
+              Section(name: 'Estante', index: 1),
+              Section(name: 'Congelador', index: 2),
+              Section(name: 'Especiarias', index: 3),
+            ];
 
-  late List<Section> orderedSections;
-  int? selectedSectionIndex;
+  final List<Section> orderedSections;
+  final int? selectedSectionIndex;
 
   @override
   List<Object?> get props => [orderedSections, selectedSectionIndex];
