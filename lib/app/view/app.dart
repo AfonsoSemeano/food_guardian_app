@@ -15,37 +15,44 @@ class App extends StatelessWidget {
   const App({
     super.key,
     required AuthenticationRepository authenticationRepository,
-    required FoodSpacesRepository foodSpacesRepository,
-  })  : _authenticationRepository = authenticationRepository,
-        _foodSpacesRepository = foodSpacesRepository;
+  }) : _authenticationRepository = authenticationRepository;
 
   final AuthenticationRepository _authenticationRepository;
-  final FoodSpacesRepository _foodSpacesRepository;
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(
+          value: _authenticationRepository,
+        ),
+      ],
+      child: MultiBlocProvider(
         providers: [
-          RepositoryProvider.value(
-            value: _authenticationRepository,
-          ),
-          RepositoryProvider.value(
-            value: _foodSpacesRepository,
+          BlocProvider(
+            create: (context) =>
+                AppBloc(authenticationRepository: _authenticationRepository),
           ),
         ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
+        child: BlocSelector<AppBloc, AppState, String>(
+          selector: (state) {
+            return state.user.id;
+          },
+          builder: (context, loggedUserId) {
+            return RepositoryProvider(
               create: (context) =>
-                  AppBloc(authenticationRepository: _authenticationRepository),
-            ),
-            BlocProvider(
-              create: (context) =>
-                  HomeBloc(foodSpacesRepository: _foodSpacesRepository),
-            ),
-          ],
-          child: AppView(),
-        ));
+                  FoodSpacesRepositoryFactory.createRepository(loggedUserId),
+              child: BlocProvider(
+                create: (context) => HomeBloc(
+                  foodSpacesRepository: context.read<FoodSpacesRepository>(),
+                ),
+                child: AppView(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 

@@ -7,13 +7,18 @@ import 'package:food_spaces_repository/food_spaces_repository.dart'
 
 part 'manage_sections_state.dart';
 
+// This Cubit is rebuilt everytime FoodSpace changes! That way,
+// we can be sure that the passed foodSpace is always the correct one.
 class ManageSectionsCubit extends Cubit<ManageSectionsState> {
-  ManageSectionsCubit(
-      {required food_repo.FoodSpacesRepository foodSpacesRepository})
-      : _foodSpacesRepository = foodSpacesRepository,
-        super(ManageSectionsState());
+  ManageSectionsCubit({
+    required food_repo.FoodSpacesRepository foodSpacesRepository,
+    List<Section>? sections,
+    required this.foodSpace,
+  })  : _foodSpacesRepository = foodSpacesRepository,
+        super(ManageSectionsState(newOrderedSections: sections));
 
   final food_repo.FoodSpacesRepository _foodSpacesRepository;
+  final food_repo.FoodSpace? foodSpace;
 
   void changeOrder(Section section, int newIndex) {
     final oldSections = [
@@ -37,11 +42,13 @@ class ManageSectionsCubit extends Cubit<ManageSectionsState> {
     emit(state.copyWith(orderedSections: oldSections));
     try {
       _foodSpacesRepository.storeSections(
-        oldSections
-            .map((s) => food_repo.Section(name: s.name, index: s.index))
-            .toList(),
-      );
-    } catch (e) {}
+          oldSections
+              .map((s) => food_repo.Section(name: s.name, index: s.index))
+              .toList(),
+          foodSpace);
+    } catch (e) {
+      print('error being thrown!!');
+    }
   }
 
   void changeSelectedIndex(Section? selectedSection) {

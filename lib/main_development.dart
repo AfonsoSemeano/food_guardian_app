@@ -3,9 +3,8 @@ import 'package:food_control_app/bootstrap.dart';
 
 void main() {
   bootstrap(
-    (authRepository, foodSpacesRepository) => App(
+    (authRepository) => App(
       authenticationRepository: authRepository,
-      foodSpacesRepository: foodSpacesRepository,
     ),
   );
 }

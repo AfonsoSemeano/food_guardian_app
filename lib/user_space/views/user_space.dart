@@ -34,49 +34,54 @@ class _UserSpaceState extends State<UserSpace>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          child: TabBar(
-            controller: _sectionsTabController,
-            isScrollable: true, // Enable horizontal scrolling
-            tabs: [
-              Tab(text: 'Palavra gigante'),
-              Tab(text: 'Massivosadasdasd'),
-              Tab(text: 'Tab 3'),
-              Tab(text: 'Tab 4'),
-              Tab(text: 'Tab 5'),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ManageSectionsPage(),
-                        settings:
-                            RouteSettings(arguments: context.read<HomeBloc>()),
-                      ),
-                    );
-                  },
-                  child: Text('CLICK ME'))
-            ],
-          ),
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: _sectionsTabController,
-            children: [
-              Center(child: Text('Tab 1')),
-              // Content of Tab 2
-              Center(child: Text('Tab 2')),
-              // Content of Tab 3
-              Center(child: Text('Tab 3')),
-              Center(child: Text('Tab 4')),
-              Center(child: Text('Tab 5')),
-              Center(child: Text('No this cant happen'))
-              // Add more tab content as needed
-            ],
-          ),
-        ),
-      ],
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) => previous.foodSpace != current.foodSpace,
+      builder: (context, state) {
+        return Column(
+          children: [
+            Container(
+              child: TabBar(
+                controller: _sectionsTabController,
+                isScrollable: true, // Enable horizontal scrolling
+                tabs: [
+                  Tab(text: 'Palavra gigante'),
+                  Tab(text: 'Massivosadasdasd'),
+                  Tab(text: 'Tab 3'),
+                  Tab(text: 'Tab 4'),
+                  Tab(text: 'Tab 5'),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ManageSectionsPage(),
+                            settings: RouteSettings(
+                                arguments: context.read<HomeBloc>()),
+                          ),
+                        );
+                      },
+                      child: Text('CLICK ME'))
+                ],
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _sectionsTabController,
+                children: [
+                  Center(child: Text('Tab 1')),
+                  // Content of Tab 2
+                  Center(child: Text('Tab 2')),
+                  // Content of Tab 3
+                  Center(child: Text('Tab 3')),
+                  Center(child: Text('Tab 4')),
+                  Center(child: Text('Tab 5')),
+                  Center(child: Text('No this cant happen'))
+                  // Add more tab content as needed
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -40,8 +40,7 @@ class AppBlocObserver extends BlocObserver {
 }
 
 Future<void> bootstrap(
-  FutureOr<Widget> Function(AuthenticationRepository authenticationRepository,
-          FoodSpacesRepository foodSpacesRepository)
+  FutureOr<Widget> Function(AuthenticationRepository authenticationRepository)
       builder,
 ) async {
   FlutterError.onError = (details) {
@@ -57,12 +56,9 @@ Future<void> bootstrap(
   );
 
   final authenticationRepository = AuthenticationRepository();
-  final foodSpacesRepository =
-      FoodSpacesRepository(authenticationRepository: authenticationRepository);
 
   await runZonedGuarded(
-    () async =>
-        runApp(await builder(authenticationRepository, foodSpacesRepository)),
+    () async => runApp(await builder(authenticationRepository)),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
   );
 }

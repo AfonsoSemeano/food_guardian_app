@@ -30,33 +30,27 @@ class ManageSectionsPage extends StatelessWidget {
         iconTheme:
             IconThemeData(color: Theme.of(context).colorScheme.secondary),
       ),
-      body: BlocProvider(
-        create: (context) => ManageSectionsCubit(
-          foodSpacesRepository: context.read<FoodSpacesRepository>(),
-        ),
-        child: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) =>
-              previous.foodSpace?.sections != current.foodSpace?.sections,
-          builder: (context, state) {
-            return BlocBuilder<ManageSectionsCubit, ManageSectionsState>(
+      body: BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) =>
+            previous.foodSpace?.id != current.foodSpace?.id ||
+            previous.foodSpace?.sections != current.foodSpace?.sections,
+        builder: (context, homeState) {
+          return BlocProvider(
+            create: (context) => ManageSectionsCubit(
+              foodSpacesRepository: context.read<FoodSpacesRepository>(),
+              sections: homeState.foodSpace?.sections
+                      .map((s) => Section(name: s.name, index: s.index))
+                      .toList() ??
+                  [],
+              foodSpace: homeState.foodSpace,
+            ),
+            child: BlocBuilder<ManageSectionsCubit, ManageSectionsState>(
               buildWhen: (previous, current) =>
                   previous.orderedSections != current.orderedSections ||
                   previous.selectedSectionIndex != current.selectedSectionIndex,
-              builder: (context, state) {
+              builder: (context, sectionsState) {
                 return Column(
                   children: [
-                    FutureBuilder(
-                      future: context
-                          .read<FoodSpacesRepository>()
-                          .foodSpaceStream
-                          .first,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return Text(snapshot.data?.id ?? 'No id!!');
-                        }
-                        return Text('Loading');
-                      },
-                    ),
                     Container(
                       margin: const EdgeInsets.only(bottom: 20, top: 20),
                       child: Text('Grab a section and change its order.'),
@@ -71,26 +65,27 @@ class ManageSectionsPage extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ...state.orderedSections
+                          ...sectionsState.orderedSections
                               .mapIndexed(
                                 (index, element) => [
-                                  if (state.selectedSectionIndex != index)
+                                  if (sectionsState.selectedSectionIndex !=
+                                      index)
                                     RectangleDragTarget(index: index),
-                                  DraggableSectionItem(element, state),
+                                  DraggableSectionItem(element, sectionsState),
                                 ],
                               )
                               .expand((widgets) => widgets),
                           RectangleDragTarget(
-                              index: state.orderedSections.length),
+                              index: sectionsState.orderedSections.length),
                         ],
                       ),
                     ),
                   ],
                 );
               },
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

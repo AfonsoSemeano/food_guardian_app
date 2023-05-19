@@ -6,17 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 class FoodSpacesRepository {
-  FoodSpacesRepository(
-      {CacheClient? cacheClient,
-      required AuthenticationRepository authenticationRepository})
-      : _cacheClient = cacheClient ?? CacheClient(),
-        _authenticationRepository = authenticationRepository {
+  FoodSpacesRepository({
+    CacheClient? cacheClient,
+    required String? loggedUserId,
+  })  : _cacheClient = cacheClient ?? CacheClient(),
+        _loggedUserId = loggedUserId {
     _foodSpaceStreamController = StreamController<FoodSpace?>.broadcast();
   }
 
   final CacheClient _cacheClient;
   late StreamController<FoodSpace?> _foodSpaceStreamController;
-  final AuthenticationRepository _authenticationRepository;
+  final String? _loggedUserId;
 
   Stream<FoodSpace?> get foodSpaceStream => _foodSpaceStreamController.stream;
 
@@ -24,23 +24,23 @@ class FoodSpacesRepository {
     await FirebaseFirestore.instance.collection('foodSpaces');
   }
 
-  Future<void> storeSections(List<Section> newSections) async {
-    FoodSpace? newestFoodSpace = await foodSpaceStream.last;
-    if (newestFoodSpace != null) {
+  Future<void> storeSections(
+      List<Section> newSections, FoodSpace? currentFoodSpace) async {
+    if (currentFoodSpace != null) {
       _foodSpaceStreamController
-          .add(newestFoodSpace.copyWith(sections: newSections));
+          .add(currentFoodSpace.copyWith(sections: newSections));
       try {
         await FirebaseFirestore.instance
             .collection('foodSpaces')
-            .doc(newestFoodSpace.id)
+            .doc(currentFoodSpace.id)
             .update({
           'sections': newSections
               .map((s) => {'name': s.name, 'index': s.index})
               .toList(),
         });
       } catch (e) {
-        _foodSpaceStreamController
-            .add(newestFoodSpace.copyWith(sections: newestFoodSpace.sections));
+        _foodSpaceStreamController.add(
+            currentFoodSpace.copyWith(sections: currentFoodSpace.sections));
         throw FoodSpacesRepositoryFailure();
       }
     }
@@ -67,7 +67,7 @@ class FoodSpacesRepository {
     FoodSpace? foundSpace;
     for (final element in foodSpacesCollectionSnap.docs) {
       final data = element.data();
-      final loggedUserId = (await _authenticationRepository.user.last).id;
+      final loggedUserId = _loggedUserId;
       if (data['ownerId'] == loggedUserId) {
         return _buildFoodSpaceOnRawData(element.id, data);
       }
@@ -78,17 +78,19 @@ class FoodSpacesRepository {
 
   FoodSpace _buildFoodSpaceOnRawData(
       String foodSpaceId, Map<String, dynamic> data) {
-    final List<Map<String, dynamic>> rawSections = data['sections'];
+    final List<Map<String, dynamic>> rawSections =
+        (data['sections'] as List<dynamic>).cast<Map<String, dynamic>>();
     final sections = rawSections
         .map((s) => Section(name: s['name'], index: s['index']))
         .toList();
-    final List<Map<String, dynamic>> rawItems = data['items'];
+    final List<Map<String, dynamic>> rawItems =
+        (data['items'] as List<dynamic>).cast<Map<String, dynamic>>();
     final items = rawItems.map((i) => Item()).toList();
     return FoodSpace(
       id: foodSpaceId,
       userOwnerId: data['ownerId'],
       allItems: items,
-      joinedUsersIds: data['joinedUsers'],
+      joinedUsersIds: (data['joinedUsers'] as List<dynamic>).cast<String>(),
       sections: sections,
     );
   }
@@ -147,4 +149,10 @@ class FoodSpacesRepositoryFailure implements Exception {
       [this.message = "An unknown error occurred."]);
 
   final String message;
+}
+
+class FoodSpacesRepositoryFactory {
+  static FoodSpacesRepository createRepository(String? loggedUserId) {
+    return FoodSpacesRepository(loggedUserId: loggedUserId);
+  }
 }

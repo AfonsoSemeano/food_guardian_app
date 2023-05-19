@@ -17,7 +17,8 @@ class FoodSpace extends Equatable {
   final List<Section> sections;
 
   @override
-  List<Object?> get props => [userOwnerId, allItems, joinedUsersIds, sections];
+  List<Object?> get props =>
+      [id, userOwnerId, allItems, joinedUsersIds, sections];
 
   FoodSpace copyWith({
     String? id,
