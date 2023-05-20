@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_control_app/manage_sections/bloc/manage_sections_bloc.dart';
 import 'package:food_control_app/manage_sections/cubit/manage_sections_cubit.dart';
 import 'package:food_control_app/manage_sections/models/models.dart';
 
@@ -20,8 +21,9 @@ class RectangleDragTarget extends StatelessWidget {
                 height: 20.0,
               );
       },
-      onAccept: (data) =>
-          context.read<ManageSectionsCubit>().changeOrder(data, index),
+      onAccept: (data) => context
+          .read<ManageSectionsBloc>()
+          .add(SectionsOrderChanged(section: data, newIndex: index)),
     );
   }
 }

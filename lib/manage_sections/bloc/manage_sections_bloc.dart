@@ -5,27 +5,33 @@ import 'package:food_control_app/manage_sections/models/models.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart'
     as food_repo;
 
+part 'manage_sections_event.dart';
 part 'manage_sections_state.dart';
 
-// This Cubit is rebuilt everytime FoodSpace changes! That way,
-// we can be sure that the passed foodSpace is always the correct one.
-class ManageSectionsCubit extends Cubit<ManageSectionsState> {
-  ManageSectionsCubit({
+class ManageSectionsBloc
+    extends Bloc<ManageSectionsEvent, ManageSectionsState> {
+  ManageSectionsBloc({
     required food_repo.FoodSpacesRepository foodSpacesRepository,
     List<Section>? sections,
     required this.foodSpace,
   })  : _foodSpacesRepository = foodSpacesRepository,
-        super(ManageSectionsState(newOrderedSections: sections));
+        super(ManageSectionsState()) {
+    on<SectionsOrderChanged>(_onSectionsOrderChanged);
+    on<SelectedSectionIndexChanged>(_onSelectedSectionIndexChanged);
+  }
 
   final food_repo.FoodSpacesRepository _foodSpacesRepository;
   final food_repo.FoodSpace? foodSpace;
 
-  void changeOrder(Section section, int newIndex) {
+  void _onSectionsOrderChanged(
+      SectionsOrderChanged event, Emitter<ManageSectionsState> emit) {
     final oldSections = [
       ...state.orderedSections.map((element) {
         return Section(name: element.name, index: element.index);
       })
     ];
+    final section = event.section;
+    final newIndex = event.newIndex;
     final foundSection = oldSections[section.index];
     if (newIndex != oldSections.length) {
       oldSections.insert(newIndex, foundSection);
@@ -51,17 +57,19 @@ class ManageSectionsCubit extends Cubit<ManageSectionsState> {
     }
   }
 
-  void changeSelectedIndex(Section? selectedSection) {
-    emit(state.copyWith(selectedSectionIndex: selectedSection?.index));
-  }
-
   void _updateEachSectionOnPosition(List<Section> sections) {
     sections.forEachIndexed((index, section) {
       section.index = index;
     });
   }
 
-  void changeSectionName(String name) {
+  void _onSelectedSectionIndexChanged(
+      SelectedSectionIndexChanged event, Emitter<ManageSectionsState> emit) {
+    emit(state.copyWith(selectedSectionIndex: event.newIndex));
+  }
+
+  void _onSectionNameChanged(
+      SectionNameChanged event, Emitter<ManageSectionsState> emit) {
     if (!state.isEditing) {
       emit(state.copyWith(isEditing: true));
     }

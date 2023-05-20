@@ -3,7 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/home/bloc/home_bloc.dart';
-import 'package:food_control_app/manage_sections/cubit/manage_sections_cubit.dart';
+import 'package:food_control_app/manage_sections/bloc/manage_sections_bloc.dart';
 import 'package:food_control_app/manage_sections/models/models.dart';
 import 'package:food_control_app/manage_sections/widgets/draggable_section_item.dart';
 import 'package:food_control_app/manage_sections/widgets/rectangle_drag_target.dart';
@@ -36,7 +36,7 @@ class ManageSectionsPage extends StatelessWidget {
             previous.foodSpace?.sections != current.foodSpace?.sections,
         builder: (context, homeState) {
           return BlocProvider(
-            create: (context) => ManageSectionsCubit(
+            create: (context) => ManageSectionsBloc(
               foodSpacesRepository: context.read<FoodSpacesRepository>(),
               sections: homeState.foodSpace?.sections
                       .map((s) => Section(name: s.name, index: s.index))
@@ -44,7 +44,7 @@ class ManageSectionsPage extends StatelessWidget {
                   [],
               foodSpace: homeState.foodSpace,
             ),
-            child: BlocBuilder<ManageSectionsCubit, ManageSectionsState>(
+            child: BlocBuilder<ManageSectionsBloc, ManageSectionsState>(
               buildWhen: (previous, current) =>
                   previous.orderedSections != current.orderedSections ||
                   previous.selectedSectionIndex != current.selectedSectionIndex,

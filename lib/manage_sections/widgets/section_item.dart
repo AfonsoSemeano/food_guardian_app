@@ -10,25 +10,19 @@ class SectionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(Icons.drag_indicator),
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-            decoration: BoxDecoration(
-              border:
-                  Border.all(color: Theme.of(context).colorScheme.secondary),
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-              color: Theme.of(context).primaryColor,
-            ),
-            child: Text(
-              section.name,
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-            ),
-          ),
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).colorScheme.secondary),
+          borderRadius: BorderRadius.all(Radius.circular(6.0)),
+          color: Theme.of(context).primaryColor,
         ),
-      ],
+        child: Text(
+          section.name,
+          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+        ),
+      ),
     );
   }
 }

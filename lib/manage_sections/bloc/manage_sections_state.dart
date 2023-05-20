@@ -1,4 +1,4 @@
-part of 'manage_sections_cubit.dart';
+part of 'manage_sections_bloc.dart';
 
 class ManageSectionsState extends Equatable {
   ManageSectionsState(
