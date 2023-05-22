@@ -15,9 +15,11 @@ class ManageSectionsBloc
     List<Section>? sections,
     required this.foodSpace,
   })  : _foodSpacesRepository = foodSpacesRepository,
-        super(ManageSectionsState()) {
+        super(ManageSectionsState(newOrderedSections: sections)) {
     on<SectionsOrderChanged>(_onSectionsOrderChanged);
     on<SelectedSectionIndexChanged>(_onSelectedSectionIndexChanged);
+    on<SectionNameChanged>(_onSectionNameChanged);
+    on<SectionNameEditFinished>(_onSectionNameEditFinished);
   }
 
   final food_repo.FoodSpacesRepository _foodSpacesRepository;
@@ -71,7 +73,66 @@ class ManageSectionsBloc
   void _onSectionNameChanged(
       SectionNameChanged event, Emitter<ManageSectionsState> emit) {
     if (!state.isEditing) {
-      emit(state.copyWith(isEditing: true));
+      emit(state.copyWith(
+          isEditing: true,
+          nameBeingEdited: event.name,
+          sectionIndexBeingEdited: event.index));
     }
+    emit(state.copyWith(nameBeingEdited: event.name));
+  }
+
+  void _onSectionNameEditFinished(
+      SectionNameEditFinished event, Emitter<ManageSectionsState> emit) {
+    if (!state.isEditing) {
+      return;
+    }
+    final validatedName = _validateName(state.nameBeingEdited,
+        state.orderedSections, state.sectionIndexBeingEdited);
+    final oldSections = [
+      ...state.orderedSections.map((element) {
+        if (element.index == state.sectionIndexBeingEdited) {
+          return Section(name: validatedName, index: element.index);
+        }
+        return Section(name: element.name, index: element.index);
+      })
+    ];
+    emit(state.copyWith(
+      orderedSections: oldSections,
+      isEditing: false,
+      sectionIndexBeingEdited: -1,
+      nameBeingEdited: '',
+    ));
+    try {
+      _foodSpacesRepository.storeSections(
+          oldSections
+              .map((s) => food_repo.Section(name: s.name, index: s.index))
+              .toList(),
+          foodSpace);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          orderedSections: foodSpace?.sections
+              .map((e) => Section(name: e.name, index: e.index))
+              .toList(),
+        ),
+      );
+    }
+  }
+
+  String _validateName(String name, List<Section> sections, int index) {
+    var number = 1;
+    var shouldRepeat = true;
+    var newName = name;
+    while (shouldRepeat) {
+      shouldRepeat = false;
+      for (final section in sections) {
+        if (section.index != index && section.name == name) {
+          newName = '${name.trim()} $number';
+          number += 1;
+          shouldRepeat = true;
+        }
+      }
+    }
+    return newName;
   }
 }

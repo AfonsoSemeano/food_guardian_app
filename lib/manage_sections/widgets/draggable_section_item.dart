@@ -7,7 +7,8 @@ import 'package:food_control_app/manage_sections/models/models.dart';
 import 'package:food_control_app/manage_sections/widgets/widgets.dart';
 
 class DraggableSectionItem extends StatefulWidget {
-  const DraggableSectionItem(this.section, this.state);
+  const DraggableSectionItem(
+      {super.key, required this.section, required this.state});
 
   final Section section;
   final ManageSectionsState state;
@@ -42,7 +43,10 @@ class _DraggableSectionItemState extends State<DraggableSectionItem> {
                       Icons.drag_indicator,
                       size: 30,
                     ),
-                    SectionItem(widget.section),
+                    SectionItem(
+                      section: widget.section,
+                      textFieldEnabled: false,
+                    ),
                   ],
                 ),
               ),
@@ -66,7 +70,7 @@ class _DraggableSectionItemState extends State<DraggableSectionItem> {
                   .add(const SelectedSectionIndexChanged(null));
             },
           ),
-          if (!isBeingDragged) SectionItem(widget.section),
+          if (!isBeingDragged) SectionItem(section: widget.section),
         ],
       ),
     );

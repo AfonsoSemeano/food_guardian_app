@@ -4,31 +4,40 @@ class ManageSectionsState extends Equatable {
   ManageSectionsState(
       {List<Section>? newOrderedSections,
       this.selectedSectionIndex,
-      this.isEditing = false})
-      : orderedSections = newOrderedSections ??
-            [
-              Section(name: 'Frigorífico', index: 0),
-              Section(name: 'Estante', index: 1),
-              Section(name: 'Congelador', index: 2),
-              Section(name: 'Especiarias', index: 3),
-            ];
+      this.isEditing = false,
+      this.nameBeingEdited = '',
+      this.sectionIndexBeingEdited = -1})
+      : orderedSections = newOrderedSections ?? [];
 
   final List<Section> orderedSections;
   final int? selectedSectionIndex;
   final bool isEditing;
+  final String nameBeingEdited;
+  final int sectionIndexBeingEdited;
 
   @override
-  List<Object?> get props => [orderedSections, selectedSectionIndex];
+  List<Object?> get props => [
+        orderedSections,
+        selectedSectionIndex,
+        isEditing,
+        nameBeingEdited,
+        sectionIndexBeingEdited
+      ];
 
   ManageSectionsState copyWith({
     List<Section>? orderedSections,
     int? selectedSectionIndex,
     bool? isEditing,
+    String? nameBeingEdited,
+    int? sectionIndexBeingEdited,
   }) {
     return ManageSectionsState(
       newOrderedSections: orderedSections ?? this.orderedSections,
       selectedSectionIndex: selectedSectionIndex,
       isEditing: isEditing ?? this.isEditing,
+      nameBeingEdited: nameBeingEdited ?? this.nameBeingEdited,
+      sectionIndexBeingEdited:
+          sectionIndexBeingEdited ?? this.sectionIndexBeingEdited,
     );
   }
 }

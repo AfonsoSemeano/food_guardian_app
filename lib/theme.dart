@@ -10,6 +10,11 @@ final theme = ThemeData(
     secondary: Color(0xFF32CD32),
     error: Colors.red,
   ),
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: Color(0xFF32CD32),
+    selectionColor: Color.fromARGB(255, 180, 252, 98),
+    selectionHandleColor: Color(0xFF32CD32),
+  ),
   scaffoldBackgroundColor: const Color(0xFFE8F5E9),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(

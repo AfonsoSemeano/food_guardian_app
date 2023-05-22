@@ -23,14 +23,18 @@ class AuthenticationRepository {
       if (firebaseUser == null) {
         return User.empty;
       } else {
-        final userDataSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(firebaseUser.uid)
-            .get();
+        try {
+          final userDataSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .get();
 
-        final user =
-            User.fromSnapshotAndFirebaseUser(userDataSnapshot, firebaseUser);
-        return user;
+          final user =
+              User.fromSnapshotAndFirebaseUser(userDataSnapshot, firebaseUser);
+          return user;
+        } catch (e) {
+          throw FirebaseSessionNotFound();
+        }
       }
     });
   }
@@ -98,6 +102,15 @@ class AuthenticationRepository {
 
 abstract class AuthenticationRepositoryFailure implements Exception {
   String get message => '';
+}
+
+class FirebaseSessionNotFound implements AuthenticationRepositoryFailure {
+  const FirebaseSessionNotFound(
+      [this.message =
+          'Internet not found. If you are still connected, contact the developers.']);
+
+  @override
+  final String message;
 }
 
 class SignUpWithEmailAndPasswordFailure

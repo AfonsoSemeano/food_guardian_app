@@ -50,20 +50,24 @@ class _HomePageState extends State<HomePage>
             ),
             backgroundColor: Theme.of(context).primaryColor,
           ),
-          body: PageView(
-            controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
-            onPageChanged: (index) {
-              context.read<HomeBloc>().add(TabChanged(index));
-            },
-            children: const [
-              Center(child: UserSpace()),
-              Center(child: UserProfileContent()),
-              Center(child: Text('FoodSpaces')),
-              Center(child: Text('Share')),
-              Center(child: Text('Settings')),
-            ],
-          ),
+          body: state.isFetching
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : PageView(
+                  controller: _pageController,
+                  physics: NeverScrollableScrollPhysics(),
+                  onPageChanged: (index) {
+                    context.read<HomeBloc>().add(TabChanged(index));
+                  },
+                  children: const [
+                    Center(child: UserSpace()),
+                    Center(child: UserProfileContent()),
+                    Center(child: Text('FoodSpaces')),
+                    Center(child: Text('Share')),
+                    Center(child: Text('Settings')),
+                  ],
+                ),
           bottomNavigationBar: Theme(
             data: Theme.of(context).copyWith(
               canvasColor: theme.primaryColor,

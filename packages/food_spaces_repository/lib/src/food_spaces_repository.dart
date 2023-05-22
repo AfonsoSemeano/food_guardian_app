@@ -142,6 +142,17 @@ class FoodSpacesRepository {
       throw FoodSpacesRepositoryFailure();
     }
   }
+
+  // Future<void> updateSectionName(String foodSpaceId, int index) {
+  //   try {
+  //     final foodSpaceFirebase = await FirebaseFirestore.instance
+  //         .collection('foodSpaces')
+  //         .doc(foodSpaceId)
+  //         .update();
+  //   } catch (e) {
+
+  //   }
+  // }
 }
 
 class FoodSpacesRepositoryFailure implements Exception {

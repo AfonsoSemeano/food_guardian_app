@@ -24,7 +24,12 @@ class SelectedSectionIndexChanged extends ManageSectionsEvent {
 }
 
 class SectionNameChanged extends ManageSectionsEvent {
-  const SectionNameChanged(this.name);
+  const SectionNameChanged(this.name, this.index);
 
   final String name;
+  final int index;
+}
+
+class SectionNameEditFinished extends ManageSectionsEvent {
+  const SectionNameEditFinished();
 }
