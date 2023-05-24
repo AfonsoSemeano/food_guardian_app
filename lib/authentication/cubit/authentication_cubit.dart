@@ -64,7 +64,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     try {
       if (state.isLogin) {
         await _authenticationRepository.loginWithEmailAndPassword(
-          email: state.email.value,
+          email: state.email.value.trim(),
           password: state.password.value,
         );
         emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
@@ -73,7 +73,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           email: state.email.value,
           password: state.password.value,
         );
-        _foodSpacesRepository.createDefaultFoodSpace(userId);
+        // await _foodSpacesRepository.createDefaultFoodSpace(userId);
         // emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
       }
     } on AuthenticationRepositoryFailure catch (error) {

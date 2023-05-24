@@ -16,12 +16,21 @@ class SectionsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: true, // Enable horizontal scrolling
-        tabs: [
-          ..._sections.map((e) => Tab(text: e.name)).toList(),
-          ElevatedButton(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+        child: Row(
+          mainAxisSize: MainAxisSize.min, // Occupy only necessary space
+          children: [
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabs: [
+                ..._sections.map((e) => Tab(text: e.name)).toList(),
+              ],
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add),
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -29,8 +38,11 @@ class SectionsBar extends StatelessWidget {
                   ),
                 );
               },
-              child: Text('CLICK ME'))
-        ],
+              label: Text('New'),
+            ),
+            const SizedBox(width: 10),
+          ],
+        ),
       ),
     );
   }

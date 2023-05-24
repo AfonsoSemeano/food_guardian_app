@@ -8,15 +8,13 @@ import 'dart:async';
 class FoodSpacesRepository {
   FoodSpacesRepository({
     CacheClient? cacheClient,
-    required String? loggedUserId,
-  })  : _cacheClient = cacheClient ?? CacheClient(),
-        _loggedUserId = loggedUserId {
+  }) : _cacheClient = cacheClient ?? CacheClient() {
     _foodSpaceStreamController = StreamController<FoodSpace?>.broadcast();
   }
 
   final CacheClient _cacheClient;
   late StreamController<FoodSpace?> _foodSpaceStreamController;
-  final String? _loggedUserId;
+  String? _loggedUserId;
 
   Stream<FoodSpace?> get foodSpaceStream => _foodSpaceStreamController.stream;
 
@@ -71,6 +69,10 @@ class FoodSpacesRepository {
       if (data['ownerId'] == loggedUserId) {
         return _buildFoodSpaceOnRawData(element.id, data);
       }
+    }
+    if (_loggedUserId != null && _loggedUserId!.isNotEmpty) {
+      await createDefaultFoodSpace(_loggedUserId!);
+      return getDefaultFoodSpace();
     }
     throw FoodSpacesRepositoryFailure(
         'The user doesn\'t have a food space! Make you sure you created one before calling this method.');
@@ -143,6 +145,10 @@ class FoodSpacesRepository {
     }
   }
 
+  void setLoggedUserId(String loggedUserId) {
+    this._loggedUserId = loggedUserId;
+  }
+
   // Future<void> updateSectionName(String foodSpaceId, int index) {
   //   try {
   //     final foodSpaceFirebase = await FirebaseFirestore.instance
@@ -160,10 +166,4 @@ class FoodSpacesRepositoryFailure implements Exception {
       [this.message = "An unknown error occurred."]);
 
   final String message;
-}
-
-class FoodSpacesRepositoryFactory {
-  static FoodSpacesRepository createRepository(String? loggedUserId) {
-    return FoodSpacesRepository(loggedUserId: loggedUserId);
-  }
 }

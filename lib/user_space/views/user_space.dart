@@ -23,10 +23,10 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
       buildWhen: (previous, current) => previous.foodSpace != current.foodSpace,
       builder: (context, state) {
         final sectionsTabController = TabController(
-            length: state.foodSpace != null
-                ? state.foodSpace!.sections.length + 1
-                : 1,
-            vsync: this);
+          length:
+              state.foodSpace != null ? state.foodSpace!.sections.length : 1,
+          vsync: this,
+        );
         return Stack(
           children: [
             Column(
@@ -46,7 +46,7 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                               .map((e) => Center(child: Text(e.name)))
                               .toList() ??
                           [],
-                      Center(child: Text('No this cant happen'))
+                      // Center(child: Text('No this cant happen'))
                       // Add more tab content as needed
                     ],
                   ),
@@ -64,7 +64,10 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                     ),
                   );
                 },
-                child: Icon(Icons.add),
+                child: Icon(
+                  Icons.add,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
             ),
           ],

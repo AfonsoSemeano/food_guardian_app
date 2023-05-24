@@ -26,6 +26,7 @@ class App extends StatelessWidget {
         RepositoryProvider.value(
           value: _authenticationRepository,
         ),
+        RepositoryProvider(create: (context) => FoodSpacesRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -33,23 +34,20 @@ class App extends StatelessWidget {
             create: (context) =>
                 AppBloc(authenticationRepository: _authenticationRepository),
           ),
+          BlocProvider(
+            create: (context) => HomeBloc(
+              foodSpacesRepository: context.read<FoodSpacesRepository>(),
+            ),
+          ),
         ],
-        child: BlocSelector<AppBloc, AppState, String>(
-          selector: (state) {
-            return state.user.id;
+        child: BlocListener<AppBloc, AppState>(
+          listener: (context, state) {
+            context.read<FoodSpacesRepository>().setLoggedUserId(state.user.id);
+            if (state.user.isNotEmpty) {
+              context.read<HomeBloc>().add(const FoodSpaceFetched());
+            }
           },
-          builder: (context, loggedUserId) {
-            return RepositoryProvider(
-              create: (context) =>
-                  FoodSpacesRepositoryFactory.createRepository(loggedUserId),
-              child: BlocProvider(
-                create: (context) => HomeBloc(
-                  foodSpacesRepository: context.read<FoodSpacesRepository>(),
-                ),
-                child: AppView(),
-              ),
-            );
-          },
+          child: AppView(),
         ),
       ),
     );

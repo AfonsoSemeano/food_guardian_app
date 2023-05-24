@@ -86,16 +86,34 @@ class ManageSectionsBloc
     if (!state.isEditing) {
       return;
     }
-    final validatedName = _validateName(state.nameBeingEdited,
+    final validatedName = _validateName(state.nameBeingEdited.trim(),
         state.orderedSections, state.sectionIndexBeingEdited);
-    final oldSections = [
-      ...state.orderedSections.map((element) {
-        if (element.index == state.sectionIndexBeingEdited) {
-          return Section(name: validatedName, index: element.index);
-        }
-        return Section(name: element.name, index: element.index);
-      })
-    ];
+    var oldSections = <Section>[];
+    if (state.orderedSections.length == state.sectionIndexBeingEdited) {
+      oldSections = [
+        ...state.orderedSections.map(
+          (element) => Section(name: element.name, index: element.index),
+        ),
+        if (validatedName.trim().isNotEmpty)
+          Section(
+            name: validatedName,
+            index: state.sectionIndexBeingEdited,
+          )
+      ];
+    } else {
+      oldSections = [
+        ...state.orderedSections.map((element) {
+          if (element.index == state.sectionIndexBeingEdited) {
+            return Section(name: validatedName, index: element.index);
+          }
+          return Section(name: element.name, index: element.index);
+        })
+      ];
+      if (validatedName.isEmpty) {
+        oldSections.removeAt(state.sectionIndexBeingEdited);
+        _updateEachSectionOnPosition(oldSections);
+      }
+    }
     emit(state.copyWith(
       orderedSections: oldSections,
       isEditing: false,
@@ -122,14 +140,17 @@ class ManageSectionsBloc
   String _validateName(String name, List<Section> sections, int index) {
     var number = 1;
     var shouldRepeat = true;
-    var newName = name;
-    while (shouldRepeat) {
-      shouldRepeat = false;
-      for (final section in sections) {
-        if (section.index != index && section.name == name) {
-          newName = '${name.trim()} $number';
-          number += 1;
-          shouldRepeat = true;
+    var newName = name.trim();
+    if (newName.isNotEmpty) {
+      while (shouldRepeat) {
+        shouldRepeat = false;
+        print('repeating $number times!');
+        for (final section in sections) {
+          if (section.index != index && section.name == newName) {
+            newName = '${name.trim()} $number';
+            number += 1;
+            shouldRepeat = true;
+          }
         }
       }
     }

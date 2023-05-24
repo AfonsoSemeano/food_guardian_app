@@ -17,7 +17,7 @@ class SectionItem extends StatefulWidget {
   State<SectionItem> createState() => _SectionItemState();
 }
 
-class _SectionItemState extends State<SectionItem> with WidgetsBindingObserver {
+class _SectionItemState extends State<SectionItem> {
   TextEditingController _textEditingController = TextEditingController();
   final focusNode = FocusNode();
 
@@ -36,9 +36,11 @@ class _SectionItemState extends State<SectionItem> with WidgetsBindingObserver {
               .sectionIndexBeingEdited ==
           widget.section.index) {
         context.read<ManageSectionsBloc>().add(SectionNameEditFinished());
+        if (widget.section.name.isEmpty) {
+          _textEditingController.text = '';
+        }
       }
     });
-    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -46,12 +48,6 @@ class _SectionItemState extends State<SectionItem> with WidgetsBindingObserver {
     _textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
   }
 
   @override
@@ -81,6 +77,7 @@ class _SectionItemState extends State<SectionItem> with WidgetsBindingObserver {
                       hoverColor: Theme.of(context).colorScheme.secondary,
                       fillColor: Theme.of(context).colorScheme.secondary,
                       iconColor: Theme.of(context).colorScheme.secondary,
+                      hintText: 'Enter a new name',
                     ),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,

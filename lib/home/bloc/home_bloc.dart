@@ -15,24 +15,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         super(const HomeState(0, null, true)) {
     on<_FoodSpaceChanged>(_onFoodSpaceChanged);
     on<TabChanged>(_onTabChanged);
-    on<_FoodSpaceFetched>(_onFoodSpaceFetched);
+    on<FoodSpaceFetched>(_onFoodSpaceFetched);
 
     _foodSpaceSubscription =
         _foodSpacesRepository.foodSpaceStream.listen((foodSpace) {
       add(_FoodSpaceChanged(foodSpace));
     });
-    add(_FoodSpaceFetched());
   }
 
   final FoodSpacesRepository _foodSpacesRepository;
   late final StreamSubscription<FoodSpace?> _foodSpaceSubscription;
 
   Future<void> _onFoodSpaceFetched(
-      _FoodSpaceFetched event, Emitter<HomeState> emit) async {
+      FoodSpaceFetched event, Emitter<HomeState> emit) async {
     emit(state.copyWith(isFetching: true));
     final foodSpaceResult = await _foodSpacesRepository.fetchFoodSpace();
     if (foodSpaceResult != null) {}
-    emit(state.copyWith(isFetching: false));
+    emit(state.copyWith(isFetching: false, tabIndex: 0));
   }
 
   void _onFoodSpaceChanged(_FoodSpaceChanged event, Emitter<HomeState> emit) {

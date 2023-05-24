@@ -19,6 +19,6 @@ class TabChanged extends HomeEvent {
   final int index;
 }
 
-class _FoodSpaceFetched extends HomeEvent {
-  const _FoodSpaceFetched();
+class FoodSpaceFetched extends HomeEvent {
+  const FoodSpaceFetched();
 }

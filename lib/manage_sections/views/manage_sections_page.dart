@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/home/bloc/home_bloc.dart';
 import 'package:food_control_app/manage_sections/bloc/manage_sections_bloc.dart';
 import 'package:food_control_app/manage_sections/models/models.dart';
+import 'package:food_control_app/manage_sections/widgets/add_section_item.dart';
 import 'package:food_control_app/manage_sections/widgets/draggable_section_item.dart';
 import 'package:food_control_app/manage_sections/widgets/rectangle_drag_target.dart';
 import 'package:food_control_app/manage_sections/widgets/widgets.dart';
@@ -21,6 +22,8 @@ class ManageSectionsPage extends StatefulWidget {
 
 class _ManageSectionsPageState extends State<ManageSectionsPage> {
   final FocusNode _nameFieldFocus = FocusNode();
+
+  final int maxSectionsLimit = 15;
 
   @override
   void dispose() {
@@ -69,6 +72,8 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
                         margin: const EdgeInsets.only(bottom: 20, top: 20),
                         child: Text('Grab a section and change its order.'),
                       ),
+                      Text(
+                          '${sectionsState.orderedSections.length}/$maxSectionsLimit sections'),
                       Container(
                         padding: const EdgeInsets.all(8),
                         margin: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -94,6 +99,10 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
                                 .expand((widgets) => widgets),
                             RectangleDragTarget(
                                 index: sectionsState.orderedSections.length),
+                            if (sectionsState.orderedSections.length !=
+                                maxSectionsLimit)
+                              AddSectionItem(
+                                  index: sectionsState.orderedSections.length),
                           ],
                         ),
                       ),
