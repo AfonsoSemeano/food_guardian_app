@@ -29,7 +29,8 @@ class ManageSectionsBloc
       SectionsOrderChanged event, Emitter<ManageSectionsState> emit) {
     final oldSections = [
       ...state.orderedSections.map((element) {
-        return Section(name: element.name, index: element.index);
+        return Section(
+            id: element.id, name: element.name, index: element.index);
       })
     ];
     final section = event.section;
@@ -51,7 +52,8 @@ class ManageSectionsBloc
     try {
       _foodSpacesRepository.storeSections(
           oldSections
-              .map((s) => food_repo.Section(name: s.name, index: s.index))
+              .map((s) =>
+                  food_repo.Section(id: s.id, name: s.name, index: s.index))
               .toList(),
           foodSpace);
     } catch (e) {
@@ -81,37 +83,68 @@ class ManageSectionsBloc
     emit(state.copyWith(nameBeingEdited: event.name));
   }
 
-  void _onSectionNameEditFinished(
-      SectionNameEditFinished event, Emitter<ManageSectionsState> emit) {
+  void _addSection() {}
+
+  Future<void> _onSectionNameEditFinished(
+      SectionNameEditFinished event, Emitter<ManageSectionsState> emit) async {
     if (!state.isEditing) {
       return;
     }
     final validatedName = _validateName(state.nameBeingEdited.trim(),
         state.orderedSections, state.sectionIndexBeingEdited);
-    var oldSections = <Section>[];
+    List<Section> oldSections;
     if (state.orderedSections.length == state.sectionIndexBeingEdited) {
+      // The user is adding a new section
       oldSections = [
-        ...state.orderedSections.map(
-          (element) => Section(name: element.name, index: element.index),
-        ),
-        if (validatedName.trim().isNotEmpty)
-          Section(
-            name: validatedName,
-            index: state.sectionIndexBeingEdited,
-          )
+        ...state.orderedSections.map((element) {
+          return Section(
+              id: element.id, name: element.name, index: element.index);
+        }),
       ];
+      final newSection = food_repo.Section(
+        id: '',
+        name: validatedName,
+        index: state.sectionIndexBeingEdited,
+      );
+      try {
+        final createdSection =
+            await _foodSpacesRepository.addSection(newSection, foodSpace);
+        oldSections.add(Section(
+            id: createdSection.id,
+            name: createdSection.name,
+            index: createdSection.index));
+      } catch (_) {}
     } else {
+      // The user is editing an existing section
       oldSections = [
         ...state.orderedSections.map((element) {
           if (element.index == state.sectionIndexBeingEdited) {
-            return Section(name: validatedName, index: element.index);
+            return Section(
+                id: element.id, name: validatedName, index: element.index);
           }
-          return Section(name: element.name, index: element.index);
+          return Section(
+              id: element.id, name: element.name, index: element.index);
         })
       ];
       if (validatedName.isEmpty) {
         oldSections.removeAt(state.sectionIndexBeingEdited);
         _updateEachSectionOnPosition(oldSections);
+      }
+      try {
+        await _foodSpacesRepository.storeSections(
+            oldSections
+                .map((s) =>
+                    food_repo.Section(id: s.id, name: s.name, index: s.index))
+                .toList(),
+            foodSpace);
+      } catch (e) {
+        emit(
+          state.copyWith(
+            orderedSections: foodSpace?.sections
+                .map((e) => Section(id: e.id, name: e.name, index: e.index))
+                .toList(),
+          ),
+        );
       }
     }
     emit(state.copyWith(
@@ -120,21 +153,6 @@ class ManageSectionsBloc
       sectionIndexBeingEdited: -1,
       nameBeingEdited: '',
     ));
-    try {
-      _foodSpacesRepository.storeSections(
-          oldSections
-              .map((s) => food_repo.Section(name: s.name, index: s.index))
-              .toList(),
-          foodSpace);
-    } catch (e) {
-      emit(
-        state.copyWith(
-          orderedSections: foodSpace?.sections
-              .map((e) => Section(name: e.name, index: e.index))
-              .toList(),
-        ),
-      );
-    }
   }
 
   String _validateName(String name, List<Section> sections, int index) {

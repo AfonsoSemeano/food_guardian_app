@@ -7,6 +7,7 @@ final theme = ThemeData(
   primaryColorLight: const Color(0xFFB2EBF2),
   primaryColor: const Color(0xFFFFFFFF),
   colorScheme: const ColorScheme.light(
+    primary: Color(0xFFFFFFFF),
     secondary: Color(0xFF32CD32),
     error: Colors.red,
   ),

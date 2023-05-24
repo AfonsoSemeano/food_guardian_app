@@ -22,7 +22,7 @@ class AddSectionItem extends StatelessWidget {
           constraints:
               const BoxConstraints(maxWidth: 36.0), // Set maximum width
         ),
-        SectionItem(section: Section(name: '', index: index)),
+        SectionItem(section: Section(id: '', name: '', index: index)),
       ],
     );
   }

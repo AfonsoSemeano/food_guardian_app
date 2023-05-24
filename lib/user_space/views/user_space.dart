@@ -34,7 +34,8 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                 SectionsBar(
                   tabController: sectionsTabController,
                   sections: state.foodSpace?.sections
-                          .map((e) => Section(name: e.name, index: e.index))
+                          .map((e) =>
+                              Section(id: e.id, name: e.name, index: e.index))
                           .toList() ??
                       [],
                 ),

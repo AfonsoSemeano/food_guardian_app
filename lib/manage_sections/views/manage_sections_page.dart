@@ -33,9 +33,6 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final selectionAndRectangleList = [
-      Section(name: 'Frigoríficio', index: 0),
-    ];
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -55,7 +52,8 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
             create: (context) => ManageSectionsBloc(
               foodSpacesRepository: context.read<FoodSpacesRepository>(),
               sections: homeState.foodSpace?.sections
-                      .map((s) => Section(name: s.name, index: s.index))
+                      .map((s) =>
+                          Section(id: s.id, name: s.name, index: s.index))
                       .toList() ??
                   [],
               foodSpace: homeState.foodSpace,
@@ -91,7 +89,7 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
                                         index)
                                       RectangleDragTarget(index: index),
                                     DraggableSectionItem(
-                                        key: ValueKey(element.name),
+                                        key: ValueKey(element.id),
                                         section: element,
                                         state: sectionsState),
                                   ],
