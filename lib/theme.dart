@@ -28,6 +28,9 @@ final theme = ThemeData(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
     ),
+    floatingLabelStyle: const TextStyle(
+      color: Color(0xFF32CD32),
+    ),
   ),
 );
 

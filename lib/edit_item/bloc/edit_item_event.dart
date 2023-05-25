@@ -8,9 +8,7 @@ abstract class EditItemEvent extends Equatable {
 }
 
 class ItemAdded extends EditItemEvent {
-  const ItemAdded({required this.item});
-
-  final Item item;
+  const ItemAdded();
 }
 
 class ItemEdited extends EditItemEvent {
@@ -31,8 +29,14 @@ class ExpirationDateChanged extends EditItemEvent {
   final String expirationDate;
 }
 
+class SectionChanged extends EditItemEvent {
+  const SectionChanged(this.section);
+
+  final Section? section;
+}
+
 class QuantityChanged extends EditItemEvent {
   const QuantityChanged(this.quantity);
 
-  final int quantity;
+  final String quantity;
 }

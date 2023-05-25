@@ -14,18 +14,17 @@ class ExpirationDate extends FormzInput<String, ExpirationDateValidationError> {
   const ExpirationDate.dirty([super.value = '']) : super.dirty();
 
   static final _expirationDateRegex = RegExp(
-    r'^\d{2}/\d{2}/\d{4}$', // Assumes expiration date format as 'MM/DD/YYYY'
+    r'^\d{2}/\d{2}/\d{4}$', // Assumes expiration date format as 'DD/MM/YYYY'
   );
 
   @override
   ExpirationDateValidationError? validator(String? value) {
     if (value == null || value.isEmpty) {
-      return null; // No validation error for empty value
+      return null;
     }
 
     if (!_expirationDateRegex.hasMatch(value)) {
-      return ExpirationDateValidationError
-          .invalidFormat; // Invalid expiration date format
+      return ExpirationDateValidationError.invalidFormat;
     }
 
     final parts = value.split('/');
@@ -75,5 +74,25 @@ class ExpirationDate extends FormzInput<String, ExpirationDateValidationError> {
     }
 
     return null; // Return null when the value is valid
+  }
+
+  String? getErrorMessage() {
+    if (error != null) {
+      switch (error!) {
+        case ExpirationDateValidationError.invalidFormat:
+          return 'Invalid format!';
+        case ExpirationDateValidationError.invalidDay:
+          return 'Invalid day!';
+        case ExpirationDateValidationError.invalidDayOfMonth:
+          return "The month doesn't have that day!";
+        case ExpirationDateValidationError.invalidLeapYear:
+          return 'Invalid leap year!';
+        case ExpirationDateValidationError.invalidMonth:
+          return 'Invalid month!';
+        case ExpirationDateValidationError.invalidYear:
+          return 'Invalid year!';
+      }
+    }
+    return null;
   }
 }
