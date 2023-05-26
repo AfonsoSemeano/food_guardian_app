@@ -50,11 +50,12 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                                   children: [
                                     ...state.foodSpace.allItems.map((item) {
                                       if (item.section?.id == section.id) {
-                                        ItemEntry(
+                                        return ItemEntry(
                                           key: ValueKey(item.id),
                                           item: item,
                                         );
                                       }
+                                      return null;
                                     }),
                                   ],
                                 ),
