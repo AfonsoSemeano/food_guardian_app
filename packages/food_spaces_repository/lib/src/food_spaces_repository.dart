@@ -20,6 +20,47 @@ class FoodSpacesRepository {
 
   Stream<FoodSpace?> get foodSpaceStream => _foodSpaceStreamController.stream;
 
+  Future<List<Item>> fetchFirstItems(
+      Section? section, FoodSpace? currentFoodSpace) async {
+    if (currentFoodSpace != null) {
+      try {
+        final firstItemsSnapshots = (await FirebaseFirestore.instance
+                .collection('foodSpaces')
+                .doc(currentFoodSpace.id)
+                .collection('items')
+                .where('section', isEqualTo: section?.id)
+                .orderBy('expirationDate')
+                .limit(15)
+                .get())
+            .docs;
+        final firstItems = firstItemsSnapshots.map((itemSnapshot) {
+          return Item(
+              id: itemSnapshot.id,
+              name: itemSnapshot['name'],
+              quantity: itemSnapshot['quantity']);
+        }).toList();
+        return firstItems;
+      } catch (_) {
+        throw FoodSpacesRepositoryFailure();
+      }
+    }
+    throw FoodSpacesRepositoryFailure();
+  }
+
+  // TODO: Depois de fazer fetch, guardar os items dentro do foodspace e atualizar a stream.
+  Future<List<Item>> fetchMoreItems(
+      Section? section, int offset, FoodSpace? currentFoodSpace) async {
+    if (currentFoodSpace != null) {
+      await FirebaseFirestore.instance
+          .collection('foodSpaces')
+          .doc(currentFoodSpace.id)
+          .collection('items')
+          .where('section', isEqualTo: section?.id)
+          .orderBy('expirationDate')
+          .limit(15);
+    }
+  }
+
   Future<void> createItem(Item newItem, FoodSpace? currentFoodSpace) async {
     if (currentFoodSpace != null) {
       try {

@@ -5,6 +5,7 @@ import 'package:food_spaces_repository/food_spaces_repository.dart';
 
 class Item extends Equatable {
   const Item({
+    required this.id,
     this.image,
     required this.name,
     this.expirationDate,
@@ -12,6 +13,7 @@ class Item extends Equatable {
     required this.quantity,
   });
 
+  final String id;
   final File? image;
   final String name;
   final DateTime? expirationDate;

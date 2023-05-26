@@ -46,6 +46,7 @@ class EditItemBloc extends Bloc<EditItemEvent, EditItemState> {
     }
     final parsedQuantity = int.parse(state.quantity.value);
     final newItem = Item(
+      id: '',
       image: state.imageFile,
       name: state.name.value,
       expirationDate: convertedExpirationDate,

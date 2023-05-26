@@ -45,7 +45,20 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                     controller: sectionsTabController,
                     children: [
                       ...state.foodSpace?.sections
-                              .map((e) => Center(child: ItemEntry()))
+                              .map(
+                                (section) => Column(
+                                  children: [
+                                    ...state.foodSpace.allItems.map((item) {
+                                      if (item.section?.id == section.id) {
+                                        ItemEntry(
+                                          key: ValueKey(item.id),
+                                          item: item,
+                                        );
+                                      }
+                                    }),
+                                  ],
+                                ),
+                              )
                               .toList() ??
                           [],
                       // Center(child: Text('No this cant happen'))
