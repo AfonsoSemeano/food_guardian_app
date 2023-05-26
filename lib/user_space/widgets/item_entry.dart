@@ -17,7 +17,7 @@ class ItemEntry extends StatelessWidget {
         borderRadius: BorderRadius.circular(8), // Controls the corner radius
       ),
       child: ListTile(
-          title: Text('Title!'),
+          title: Text(item.name),
           subtitle: Row(
             children: [
               Icon(
@@ -40,7 +40,7 @@ class ItemEntry extends StatelessWidget {
                       size: 15,
                     ),
                   ),
-                  Text('2'),
+                  Text(item.quantity.toString()),
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(

@@ -1,6 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:cache/cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,18 +48,41 @@ class FoodSpacesRepository {
     throw FoodSpacesRepositoryFailure();
   }
 
-  // TODO: Depois de fazer fetch, guardar os items dentro do foodspace e atualizar a stream.
-  Future<List<Item>> fetchMoreItems(
-      Section? section, int offset, FoodSpace? currentFoodSpace) async {
+  Future<List<Item>> fetchMoreItems({
+    required Section? section,
+    required Item? lastItem,
+    required FoodSpace? currentFoodSpace,
+  }) async {
     if (currentFoodSpace != null) {
-      await FirebaseFirestore.instance
+      final ref = FirebaseFirestore.instance
           .collection('foodSpaces')
           .doc(currentFoodSpace.id)
           .collection('items')
           .where('section', isEqualTo: section?.id)
-          .orderBy('expirationDate')
-          .limit(15);
+          .orderBy('expirationDate');
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> itemsSnapshot;
+      if (lastItem == null) {
+        itemsSnapshot = (await ref.limit(15).get()).docs;
+      } else {
+        itemsSnapshot = (await ref
+                .startAfterDocument(lastItem.itemSnapshot!)
+                .limit(15)
+                .get())
+            .docs;
+      }
+      final firstItems = itemsSnapshot.mapIndexed((index, itemSnapshot) {
+        final item = Item(
+            id: itemSnapshot.id,
+            name: itemSnapshot['name'],
+            quantity: itemSnapshot['quantity']);
+        if (index == 14) {
+          item.itemSnapshot = itemSnapshot;
+        }
+        return item;
+      }).toList();
+      return firstItems;
     }
+    return [];
   }
 
   Future<void> createItem(Item newItem, FoodSpace? currentFoodSpace) async {

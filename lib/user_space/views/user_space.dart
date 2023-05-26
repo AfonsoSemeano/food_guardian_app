@@ -7,6 +7,7 @@ import 'package:food_control_app/home/bloc/home_bloc.dart';
 import 'package:food_control_app/manage_sections/models/models.dart';
 import 'package:food_control_app/manage_sections/views/manage_sections_page.dart';
 import 'package:food_control_app/manage_sections/widgets/widgets.dart';
+import 'package:food_control_app/user_space/widgets/infinite_items.dart';
 import 'package:food_control_app/user_space/widgets/item_entry.dart';
 import 'package:food_control_app/user_space/widgets/sections_bar.dart';
 
@@ -46,19 +47,7 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                     children: [
                       ...state.foodSpace?.sections
                               .map(
-                                (section) => Column(
-                                  children: [
-                                    ...state.foodSpace.allItems.map((item) {
-                                      if (item.section?.id == section.id) {
-                                        return ItemEntry(
-                                          key: ValueKey(item.id),
-                                          item: item,
-                                        );
-                                      }
-                                      return null;
-                                    }),
-                                  ],
-                                ),
+                                (section) => InfiniteItems(section: section),
                               )
                               .toList() ??
                           [],
