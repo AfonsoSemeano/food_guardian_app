@@ -8,7 +8,7 @@ class Quantity extends FormzInput<String, QuantityValidationError> {
 
   @override
   QuantityValidationError? validator(String? value) {
-    if (value == null) {
+    if (value == null || value.isEmpty) {
       return QuantityValidationError.empty;
     }
 

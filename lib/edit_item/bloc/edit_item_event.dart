@@ -17,6 +17,18 @@ class ItemEdited extends EditItemEvent {
   final Item item;
 }
 
+class ImageChanged extends EditItemEvent {
+  const ImageChanged(this.imageFile);
+
+  final File? imageFile;
+}
+
+class LoadingChanged extends EditItemEvent {
+  const LoadingChanged({required this.isLoading});
+
+  final bool isLoading;
+}
+
 class NameChanged extends EditItemEvent {
   const NameChanged(this.name);
 
@@ -39,4 +51,11 @@ class QuantityChanged extends EditItemEvent {
   const QuantityChanged(this.quantity);
 
   final String quantity;
+}
+
+// New event for button clicks
+class QuantityButtonClicked extends EditItemEvent {
+  const QuantityButtonClicked({required this.isIncrement});
+
+  final bool isIncrement;
 }

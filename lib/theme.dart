@@ -18,10 +18,19 @@ final theme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(
-        const Color(0xFF32CD32),
+      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) {
+            return Colors.grey; // Customize the disabled color
+          }
+          return const Color(0xFF32CD32); // Customize the enabled color
+        },
       ),
     ),
+  ),
+  chipTheme: const ChipThemeData(
+    selectedColor: Color(0xFF32CD32),
+    secondaryLabelStyle: TextStyle(color: Colors.white),
   ),
   scaffoldBackgroundColor: const Color(0xFFE8F5E9),
   inputDecorationTheme: InputDecorationTheme(

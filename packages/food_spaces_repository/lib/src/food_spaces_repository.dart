@@ -1,6 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:cache/cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -22,6 +23,16 @@ class FoodSpacesRepository {
   Future<void> createItem(Item newItem, FoodSpace? currentFoodSpace) async {
     if (currentFoodSpace != null) {
       try {
+        String? imageUrl;
+        if (newItem.image != null) {
+          final imageRef = FirebaseStorage.instance
+              .ref()
+              .child('products_image')
+              .child(currentFoodSpace.id)
+              .child('${Uuid().v4()}.jpg');
+          await imageRef.putFile(newItem.image!).whenComplete(() => null);
+          imageUrl = await imageRef.getDownloadURL();
+        }
         String itemId = await FirebaseFirestore.instance
             .collection('foodSpaces')
             .doc(currentFoodSpace.id)
@@ -36,6 +47,8 @@ class FoodSpacesRepository {
             .set({
           'name': newItem.name,
           'expirationDate': newItem.expirationDate,
+          'section': newItem.section?.id,
+          'image': imageUrl,
           'quantity': newItem.quantity,
         });
       } catch (_) {}

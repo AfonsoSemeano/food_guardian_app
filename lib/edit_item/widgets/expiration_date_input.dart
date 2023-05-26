@@ -48,6 +48,7 @@ class _ExpirationDateInput extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
+                key: ValueKey('Expiration Date Input'),
                 controller: controller,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(

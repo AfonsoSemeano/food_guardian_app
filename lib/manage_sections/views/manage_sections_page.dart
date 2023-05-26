@@ -35,6 +35,10 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Manage Sessions',
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),

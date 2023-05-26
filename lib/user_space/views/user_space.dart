@@ -7,6 +7,7 @@ import 'package:food_control_app/home/bloc/home_bloc.dart';
 import 'package:food_control_app/manage_sections/models/models.dart';
 import 'package:food_control_app/manage_sections/views/manage_sections_page.dart';
 import 'package:food_control_app/manage_sections/widgets/widgets.dart';
+import 'package:food_control_app/user_space/widgets/item_entry.dart';
 import 'package:food_control_app/user_space/widgets/sections_bar.dart';
 
 class UserSpace extends StatefulWidget {
@@ -44,7 +45,7 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                     controller: sectionsTabController,
                     children: [
                       ...state.foodSpace?.sections
-                              .map((e) => Center(child: Text(e.name)))
+                              .map((e) => Center(child: ItemEntry()))
                               .toList() ??
                           [],
                       // Center(child: Text('No this cant happen'))
@@ -61,7 +62,9 @@ class _UserSpaceState extends State<UserSpace> with TickerProviderStateMixin {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => EditItemPage(),
+                      builder: (context) => EditItemPage(
+                        isCreateMode: true,
+                      ),
                     ),
                   );
                 },

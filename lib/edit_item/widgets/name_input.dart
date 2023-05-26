@@ -9,6 +9,7 @@ class _NameInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.name != current.name,
       builder: (context, state) {
         return TextField(
+          key: ValueKey('Name Input'),
           onChanged: (value) =>
               context.read<EditItemBloc>().add(NameChanged(value)),
           decoration: InputDecoration(
