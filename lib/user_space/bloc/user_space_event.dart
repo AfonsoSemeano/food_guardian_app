@@ -6,3 +6,14 @@ abstract class UserSpaceEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class ItemQuantityButtonClicked extends UserSpaceEvent {
+  const ItemQuantityButtonClicked(
+      {required this.newQuantity,
+      required this.item,
+      required this.currentFoodSpace});
+
+  final int newQuantity;
+  final Item item;
+  final FoodSpace? currentFoodSpace;
+}

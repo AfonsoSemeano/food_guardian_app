@@ -14,9 +14,13 @@ class _SubmitButton extends StatelessWidget {
         return ElevatedButton(
           onPressed: state.validateInputs()
               ? () {
-                  context.read<EditItemBloc>().add(ItemAdded());
-                  Navigator.of(context).pop();
-                  if (isCreateMode) {
+                  if (!isCreateMode) {
+                    print('not create mode');
+                    final item = context.read<EditItemBloc>().state.item;
+                    context.read<EditItemBloc>().add(const ItemEdited());
+                  } else {
+                    print('is create mode');
+                    context.read<EditItemBloc>().add(const ItemAdded());
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => EditItemPage(
@@ -25,6 +29,7 @@ class _SubmitButton extends StatelessWidget {
                       ),
                     );
                   }
+                  Navigator.of(context).pop();
                 }
               : null,
           child: Text('Submit'),

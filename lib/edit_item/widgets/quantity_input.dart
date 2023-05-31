@@ -13,7 +13,9 @@ class _QuantityInputState extends State<_QuantityInput> {
   @override
   void initState() {
     super.initState();
-    controller = TextEditingController(text: '1');
+    final qtt = context.read<EditItemBloc>().state.quantity.value;
+
+    controller = TextEditingController(text: qtt);
   }
 
   @override

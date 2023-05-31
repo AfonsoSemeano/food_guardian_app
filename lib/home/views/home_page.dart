@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_control_app/edit_item/bloc/edit_item_bloc.dart';
 import 'package:food_control_app/home/bloc/home_bloc.dart';
 import 'package:food_control_app/theme.dart';
 import 'package:food_control_app/user_profile/views/user_profile_content.dart';
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage>
           previous.tabIndex != current.tabIndex ||
           previous.foodSpace?.id != current.foodSpace?.id,
       builder: (context, state) {
+        context.read<EditItemBloc>().setFoodSpace(state.foodSpace);
         return Scaffold(
           appBar: AppBar(
             title: Text(

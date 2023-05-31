@@ -1,10 +1,13 @@
 part of '../views/edit_item_page.dart';
 
-class _ExpirationDateInput extends StatelessWidget {
-  _ExpirationDateInput({super.key}) : controller = TextEditingController();
+class _ExpirationDateInput extends StatefulWidget {
+  _ExpirationDateInput({super.key});
 
-  final TextEditingController controller;
+  @override
+  State<_ExpirationDateInput> createState() => _ExpirationDateInputState();
+}
 
+class _ExpirationDateInputState extends State<_ExpirationDateInput> {
   Future<void> _selectDate(
       BuildContext context, ExpirationDate expirationDateInput) async {
     DateTime? selectedDate;
@@ -38,12 +41,37 @@ class _ExpirationDateInput extends StatelessWidget {
     }
   }
 
+  final controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final name = context.read<EditItemBloc>().state.expirationDate.value;
+
+    updateTextAndCursorPosition(name);
+  }
+
+  void updateTextAndCursorPosition(String newText) {
+    final selection = controller.selection;
+    final cursorPosition = selection.extentOffset;
+    final newCursorPosition = min(cursorPosition, newText.length);
+
+    controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newCursorPosition),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EditItemBloc, EditItemState>(
       buildWhen: (previous, current) =>
           previous.expirationDate != current.expirationDate,
       builder: (context, state) {
+        final expirationValue = state.expirationDate.value;
+        if (controller.text != expirationValue) {
+          updateTextAndCursorPosition(expirationValue);
+        }
         return Row(
           children: [
             Expanded(

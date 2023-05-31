@@ -54,6 +54,16 @@ class _InfiniteItemsState extends State<InfiniteItems> {
       PagedListView<Item?, Item>(
         pagingController: _pagingController,
         builderDelegate: PagedChildBuilderDelegate<Item>(
+          firstPageProgressIndicatorBuilder: (context) => Scaffold(
+            body: Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+          ),
           itemBuilder: (context, item, index) => ItemEntry(item: item),
         ),
       );

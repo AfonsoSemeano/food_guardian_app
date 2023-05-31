@@ -7,14 +7,22 @@ abstract class EditItemEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class ClearStateRequested extends EditItemEvent {
+  const ClearStateRequested();
+}
+
+class ItemChanged extends EditItemEvent {
+  const ItemChanged(this.item);
+
+  final Item? item;
+}
+
 class ItemAdded extends EditItemEvent {
   const ItemAdded();
 }
 
 class ItemEdited extends EditItemEvent {
-  const ItemEdited({required this.item});
-
-  final Item item;
+  const ItemEdited();
 }
 
 class ImageChanged extends EditItemEvent {

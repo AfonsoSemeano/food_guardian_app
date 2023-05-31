@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/app/bloc/app_bloc.dart';
 import 'package:food_control_app/authentication/views/authentication_page.dart';
+import 'package:food_control_app/edit_item/bloc/edit_item_bloc.dart';
 import 'package:food_control_app/home/bloc/home_bloc.dart';
 import 'package:food_control_app/home/views/home_page.dart';
 import 'package:food_control_app/home/views/splash_page.dart';
@@ -39,6 +40,11 @@ class App extends StatelessWidget {
               foodSpacesRepository: context.read<FoodSpacesRepository>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => EditItemBloc(
+              foodSpacesRepository: context.read<FoodSpacesRepository>(),
+            ),
+          )
         ],
         child: BlocListener<AppBloc, AppState>(
           listener: (context, state) {

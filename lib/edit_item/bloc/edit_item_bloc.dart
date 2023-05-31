@@ -12,9 +12,7 @@ part 'edit_item_state.dart';
 class EditItemBloc extends Bloc<EditItemEvent, EditItemState> {
   EditItemBloc({
     required FoodSpacesRepository foodSpacesRepository,
-    required FoodSpace? foodSpace,
   })  : _foodSpacesRepository = foodSpacesRepository,
-        _foodSpace = foodSpace,
         super(EditItemState()) {
     on<ItemAdded>(_onItemAdded);
     on<ItemEdited>(_onItemEdited);
@@ -25,13 +23,55 @@ class EditItemBloc extends Bloc<EditItemEvent, EditItemState> {
     on<QuantityButtonClicked>(_onQuantityButtonClicked);
     on<ImageChanged>(_onImageChanged);
     on<LoadingChanged>(_onLoadingChanged);
+    on<ItemChanged>(_onItemChanged);
+    on<ClearStateRequested>(_onClearStateRequested);
   }
 
   final FoodSpacesRepository _foodSpacesRepository;
   FoodSpace? _foodSpace;
+  Item? _item;
 
-  void setFoodSpace(FoodSpace foodSpace) {
+  void setFoodSpace(FoodSpace? foodSpace) {
     _foodSpace = foodSpace;
+  }
+
+  void _onClearStateRequested(
+      ClearStateRequested event, Emitter<EditItemState> emit) {
+    emit(
+      state.copyWith(
+        name: const Name.pure(),
+        expirationDate: const ExpirationDate.pure(),
+        quantity: const Quantity.pure(),
+        section: const Section(id: '', name: '', index: -1),
+        imageFile: File(''),
+        isLoading: false,
+        item: Item(id: '', name: '', quantity: -1),
+      ),
+    );
+  }
+
+  void _onItemChanged(ItemChanged event, Emitter<EditItemState> emit) {
+    final item = event.item;
+    emit(
+      state.copyWith(
+        item: event.item,
+        name: item != null ? Name.dirty(item.name) : Name.pure(),
+        expirationDate: item?.expirationDate != null
+            ? ExpirationDate.dirty(
+                DateFormat('dd/MM/yyyy').format(item!.expirationDate!))
+            : null,
+        quantity:
+            item != null ? Quantity.dirty(item.quantity.toString()) : null,
+        section: item?.section != null
+            ? Section(
+                id: item!.section!.id,
+                name: item.section!.name,
+                index: item.section!.index,
+              )
+            : null,
+        isLoading: false,
+      ),
+    );
   }
 
   void _onItemAdded(ItemAdded event, Emitter<EditItemState> emit) {
@@ -47,16 +87,36 @@ class EditItemBloc extends Bloc<EditItemEvent, EditItemState> {
     final parsedQuantity = int.parse(state.quantity.value);
     final newItem = Item(
       id: '',
-      image: state.imageFile,
       name: state.name.value,
       expirationDate: convertedExpirationDate,
       section: state.section,
       quantity: parsedQuantity,
     );
-    _foodSpacesRepository.createItem(newItem, _foodSpace);
+    _foodSpacesRepository.createItem(newItem, state.imageFile, _foodSpace);
   }
 
-  void _onItemEdited(ItemEdited event, Emitter<EditItemState> emit) {}
+  void _onItemEdited(ItemEdited event, Emitter<EditItemState> emit) {
+    if (!Formz.validate([state.name, state.expirationDate, state.quantity])) {
+      return;
+    }
+    DateTime? convertedExpirationDate;
+    if (state.expirationDate.value.isNotEmpty) {
+      convertedExpirationDate =
+          DateFormat('dd/MM/yyyy').parse(state.expirationDate.value);
+    }
+    final parsedQuantity = int.parse(state.quantity.value);
+    _foodSpacesRepository.updateItem(
+      Item(
+        id: state.item!.id,
+        name: state.name.value,
+        quantity: int.parse(state.quantity.value),
+        expirationDate: convertedExpirationDate,
+        section: state.section,
+      ),
+      state.imageFile,
+      _foodSpace,
+    );
+  }
 
   void _onImageChanged(ImageChanged event, Emitter<EditItemState> emit) {
     emit(state.copyWith(imageFile: event.imageFile ?? File('')));

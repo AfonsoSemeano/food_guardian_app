@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_control_app/edit_item/views/edit_item_page.dart';
+import 'package:food_control_app/home/bloc/home_bloc.dart';
+import 'package:food_control_app/user_space/bloc/user_space_bloc.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+part 'expiration_subtitle.dart';
+part 'trailing_quantity.dart';
 
 class ItemEntry extends StatelessWidget {
   const ItemEntry({super.key, required this.item});
@@ -17,41 +24,71 @@ class ItemEntry extends StatelessWidget {
         borderRadius: BorderRadius.circular(8), // Controls the corner radius
       ),
       child: ListTile(
-          title: Text(item.name),
-          subtitle: Row(
-            children: [
-              Icon(
-                MdiIcons.timerSandFull,
-                color: Colors.orange,
+        onTap: () {
+          print('${item.section} section');
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => EditItemPage(
+                item: item,
               ),
-              Text('In 5 days'),
-            ],
-          ),
-          trailing: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.remove,
-                      size: 15,
-                    ),
+            ),
+          );
+        },
+        leading: Container(
+          width: 56,
+          child: item.image != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    item.image!,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.secondary,
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) =>
+                        Text('Failed to load image'),
                   ),
-                  Text(item.quantity.toString()),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.add,
-                      size: 15,
-                    ),
+                )
+              : Container(
+                  width: 56,
+                  height: 56,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      const Center(
+                        child: Icon(
+                          Icons.fastfood,
+                          size: 30,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
-          )),
+                ),
+        ),
+        title: Text(item.name),
+        subtitle: _ExpirationSubtitle(expirationDate: item.expirationDate),
+        trailing: _TrailingQuantity(item: item),
+      ),
     );
   }
 }

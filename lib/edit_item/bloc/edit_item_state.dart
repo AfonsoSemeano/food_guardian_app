@@ -9,6 +9,7 @@ class EditItemState extends Equatable {
     this.imageFile,
     this.errorMessage,
     this.isLoading = false,
+    this.item,
   });
 
   final Name name;
@@ -18,6 +19,7 @@ class EditItemState extends Equatable {
   final Section? section;
   final File? imageFile;
   final bool isLoading;
+  final Item? item;
 
   @override
   List<Object?> get props => [
@@ -27,7 +29,8 @@ class EditItemState extends Equatable {
         section?.id,
         imageFile?.path,
         isLoading,
-        errorMessage
+        errorMessage,
+        item
       ];
 
   bool validateInputs() {
@@ -42,6 +45,7 @@ class EditItemState extends Equatable {
     File? imageFile,
     bool? isLoading,
     String? errorMessage,
+    Item? item,
   }) {
     final newSection = section == null
         ? this.section
@@ -53,6 +57,11 @@ class EditItemState extends Equatable {
         : imageFile.path.isEmpty
             ? null
             : imageFile;
+    final newItem = item == null
+        ? this.item
+        : item.id.isEmpty
+            ? null
+            : item;
     return EditItemState(
       name: name ?? this.name,
       expirationDate: expirationDate ?? this.expirationDate,
@@ -61,6 +70,7 @@ class EditItemState extends Equatable {
       imageFile: newImageFile,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
+      item: newItem,
     );
   }
 }

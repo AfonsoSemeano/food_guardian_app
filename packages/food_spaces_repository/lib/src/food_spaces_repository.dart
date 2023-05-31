@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:cache/cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,32 +23,50 @@ class FoodSpacesRepository {
 
   Stream<FoodSpace?> get foodSpaceStream => _foodSpaceStreamController.stream;
 
-  Future<List<Item>> fetchFirstItems(
-      Section? section, FoodSpace? currentFoodSpace) async {
+  Future<void> changeItemQuantity(
+      Item item, int newQuantity, FoodSpace? currentFoodSpace) async {
     if (currentFoodSpace != null) {
       try {
-        final firstItemsSnapshots = (await FirebaseFirestore.instance
-                .collection('foodSpaces')
-                .doc(currentFoodSpace.id)
-                .collection('items')
-                .where('section', isEqualTo: section?.id)
-                .orderBy('expirationDate')
-                .limit(15)
-                .get())
-            .docs;
-        final firstItems = firstItemsSnapshots.map((itemSnapshot) {
-          return Item(
-              id: itemSnapshot.id,
-              name: itemSnapshot['name'],
-              quantity: itemSnapshot['quantity']);
-        }).toList();
-        return firstItems;
-      } catch (_) {
+        await FirebaseFirestore.instance
+            .collection('foodSpaces')
+            .doc(currentFoodSpace.id)
+            .collection('items')
+            .doc(item.id)
+            .update({
+          'quantity': newQuantity,
+        });
+      } catch (e) {
         throw FoodSpacesRepositoryFailure();
       }
     }
-    throw FoodSpacesRepositoryFailure();
   }
+
+  // Future<List<Item>> fetchFirstItems(
+  //     Section? section, FoodSpace? currentFoodSpace) async {
+  //   if (currentFoodSpace != null) {
+  //     try {
+  //       final firstItemsSnapshots = (await FirebaseFirestore.instance
+  //               .collection('foodSpaces')
+  //               .doc(currentFoodSpace.id)
+  //               .collection('items')
+  //               .where('section', isEqualTo: section?.id)
+  //               .orderBy('expirationDate')
+  //               .limit(15)
+  //               .get())
+  //           .docs;
+  //       final firstItems = firstItemsSnapshots.map((itemSnapshot) {
+  //         return Item(
+  //             id: itemSnapshot.id,
+  //             name: itemSnapshot['name'],
+  //             quantity: itemSnapshot['quantity']);
+  //       }).toList();
+  //       return firstItems;
+  //     } catch (_) {
+  //       throw FoodSpacesRepositoryFailure();
+  //     }
+  //   }
+  //   throw FoodSpacesRepositoryFailure();
+  // }
 
   Future<List<Item>> fetchMoreItems({
     required Section? section,
@@ -59,7 +79,7 @@ class FoodSpacesRepository {
           .doc(currentFoodSpace.id)
           .collection('items')
           .where('section', isEqualTo: section?.id)
-          .orderBy('expirationDate');
+          .orderBy('expirationDate', descending: true);
       List<QueryDocumentSnapshot<Map<String, dynamic>>> itemsSnapshot;
       if (lastItem == null) {
         itemsSnapshot = (await ref.limit(15).get()).docs;
@@ -74,6 +94,13 @@ class FoodSpacesRepository {
         final item = Item(
             id: itemSnapshot.id,
             name: itemSnapshot['name'],
+            expirationDate:
+                (itemSnapshot['expirationDate'] as Timestamp?)?.toDate(),
+            image: itemSnapshot['image'],
+            section: Section(
+                id: section?.id ?? '',
+                name: section?.name ?? '',
+                index: section?.index ?? -1),
             quantity: itemSnapshot['quantity']);
         if (index == 14) {
           item.itemSnapshot = itemSnapshot;
@@ -85,17 +112,54 @@ class FoodSpacesRepository {
     return [];
   }
 
-  Future<void> createItem(Item newItem, FoodSpace? currentFoodSpace) async {
+  Future<void> updateItem(
+      Item item, File? newImageFile, FoodSpace? currentFoodSpace) async {
     if (currentFoodSpace != null) {
       try {
+        if (item.image != null) {
+          final storageRef = FirebaseStorage.instance.refFromURL(item.image!);
+          await storageRef.delete();
+        }
         String? imageUrl;
-        if (newItem.image != null) {
+        if (newImageFile != null) {
           final imageRef = FirebaseStorage.instance
               .ref()
               .child('products_image')
               .child(currentFoodSpace.id)
               .child('${Uuid().v4()}.jpg');
-          await imageRef.putFile(newItem.image!).whenComplete(() => null);
+          await imageRef.putFile(newImageFile).whenComplete(() => null);
+          imageUrl = await imageRef.getDownloadURL();
+        }
+        await FirebaseFirestore.instance
+            .collection('foodSpaces')
+            .doc(currentFoodSpace.id)
+            .collection('items')
+            .doc(item.id)
+            .update({
+          'name': item.name,
+          'expirationDate': item.expirationDate,
+          'section': item.section?.id,
+          'image': imageUrl,
+          'quantity': item.quantity,
+        });
+      } catch (_) {
+        print('EROR!');
+      }
+    }
+  }
+
+  Future<void> createItem(
+      Item newItem, File? imageFile, FoodSpace? currentFoodSpace) async {
+    if (currentFoodSpace != null) {
+      try {
+        String? imageUrl;
+        if (imageFile != null) {
+          final imageRef = FirebaseStorage.instance
+              .ref()
+              .child('products_image')
+              .child(currentFoodSpace.id)
+              .child('${Uuid().v4()}.jpg');
+          await imageRef.putFile(imageFile).whenComplete(() => null);
           imageUrl = await imageRef.getDownloadURL();
         }
         String itemId = await FirebaseFirestore.instance

@@ -15,7 +15,7 @@ class Item extends Equatable {
   });
 
   final String id;
-  final File? image;
+  final String? image;
   final String name;
   final DateTime? expirationDate;
   final Section? section;
@@ -23,5 +23,6 @@ class Item extends Equatable {
   QueryDocumentSnapshot<Map<String, dynamic>>? itemSnapshot;
 
   @override
-  List<Object?> get props => [name, expirationDate, section, quantity];
+  List<Object?> get props =>
+      [id, image, name, expirationDate, section, quantity];
 }

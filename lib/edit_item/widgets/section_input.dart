@@ -9,6 +9,7 @@ class _SectionInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.section?.id != current.section?.id,
       builder: (context, state) {
+        print(state.section);
         return Column(
           children: [
             Text('Section'),
