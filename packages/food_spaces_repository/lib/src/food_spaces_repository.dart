@@ -23,6 +23,25 @@ class FoodSpacesRepository {
 
   Stream<FoodSpace?> get foodSpaceStream => _foodSpaceStreamController.stream;
 
+  Future<void> deleteItem(Item item, FoodSpace? currentFoodSpace) async {
+    if (currentFoodSpace != null) {
+      try {
+        if (item.image != null) {
+          final storageRef = FirebaseStorage.instance.refFromURL(item.image!);
+          await storageRef.delete();
+        }
+        await FirebaseFirestore.instance
+            .collection('foodSpaces')
+            .doc(currentFoodSpace.id)
+            .collection('items')
+            .doc(item.id)
+            .delete();
+      } catch (_) {
+        throw FoodSpacesRepositoryFailure();
+      }
+    }
+  }
+
   Future<void> changeItemQuantity(
       Item item, int newQuantity, FoodSpace? currentFoodSpace) async {
     if (currentFoodSpace != null) {

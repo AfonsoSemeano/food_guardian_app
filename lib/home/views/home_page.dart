@@ -10,6 +10,7 @@ import 'package:food_control_app/user_profile/views/user_profile_content.dart';
 import 'package:food_control_app/manage_sections/views/manage_sections_page.dart';
 import 'package:food_control_app/user_space/views/views.dart';
 import 'package:food_spaces_repository/food_spaces_repository.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class HomePage extends StatefulWidget {
   static Page<void> page() => const MaterialPage<void>(child: HomePage());
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage>
                   Colors.black, // Set the unselected item color
               items: const [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.tab),
+                  icon: Icon(MdiIcons.home),
                   label: 'Your Space',
                 ),
                 BottomNavigationBarItem(
@@ -100,15 +101,15 @@ class _HomePageState extends State<HomePage>
                   label: 'Profile',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.tab),
+                  icon: Icon(MdiIcons.homeGroup),
                   label: 'FoodSpaces',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.tab),
+                  icon: Icon(Icons.share),
                   label: 'Share',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.tab),
+                  icon: Icon(Icons.settings),
                   label: 'Settings',
                 ),
               ],

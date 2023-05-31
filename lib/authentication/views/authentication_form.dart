@@ -82,6 +82,7 @@ class _ConfirmPasswordInput extends StatelessWidget {
             ? const SizedBox()
             : TextField(
                 key: const Key('confirm-password-input'),
+                obscureText: true,
                 onChanged: (value) => context
                     .read<AuthenticationCubit>()
                     .confirmPasswordChanged(state.password.value, value),
@@ -109,7 +110,9 @@ class _SubmitButton extends StatelessWidget {
       builder: (context, state) {
         return state.submissionStatus.isInProgress
             ? Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               )
             : state.submissionStatus.isSuccess
                 ? Text('Success!!!')

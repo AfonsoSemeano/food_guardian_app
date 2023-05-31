@@ -31,6 +31,12 @@ class ImageChanged extends EditItemEvent {
   final File? imageFile;
 }
 
+class ItemDeleted extends EditItemEvent {
+  const ItemDeleted(this.item);
+
+  final Item item;
+}
+
 class LoadingChanged extends EditItemEvent {
   const LoadingChanged({required this.isLoading});
 

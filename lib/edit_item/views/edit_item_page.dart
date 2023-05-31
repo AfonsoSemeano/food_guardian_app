@@ -112,6 +112,18 @@ class _EditItemPageState extends State<EditItemPage> {
                 );
         },
       ),
+      floatingActionButton: widget.item != null
+          ? FloatingActionButton(
+              onPressed: () {
+                context.read<EditItemBloc>().add(ItemDeleted(widget.item!));
+                Navigator.of(context).pop();
+              },
+              child: Icon(
+                Icons.delete,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            )
+          : null,
     );
   }
 }

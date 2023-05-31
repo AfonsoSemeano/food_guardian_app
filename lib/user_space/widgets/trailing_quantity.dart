@@ -1,8 +1,10 @@
 part of './item_entry.dart';
 
 class _TrailingQuantity extends StatefulWidget {
-  const _TrailingQuantity({super.key, required this.item});
+  const _TrailingQuantity(
+      {super.key, required this.item, required this.deleteFn});
 
+  final Function deleteFn;
   final Item item;
 
   @override
@@ -15,7 +17,6 @@ class _TrailingQuantityState extends State<_TrailingQuantity> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     quantity = widget.item.quantity;
   }
@@ -62,7 +63,15 @@ class _TrailingQuantityState extends State<_TrailingQuantity> {
               ),
             if (quantity == 1)
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<UserSpaceBloc>().add(
+                        ItemDeleteButtonClicked(
+                          widget.item,
+                          context.read<HomeBloc>().state.foodSpace,
+                        ),
+                      );
+                  widget.deleteFn();
+                },
                 icon: Icon(
                   Icons.delete,
                   color: Theme.of(context).colorScheme.error,

@@ -25,6 +25,7 @@ class EditItemBloc extends Bloc<EditItemEvent, EditItemState> {
     on<LoadingChanged>(_onLoadingChanged);
     on<ItemChanged>(_onItemChanged);
     on<ClearStateRequested>(_onClearStateRequested);
+    on<ItemDeleted>(_onItemDeleted);
   }
 
   final FoodSpacesRepository _foodSpacesRepository;
@@ -48,6 +49,11 @@ class EditItemBloc extends Bloc<EditItemEvent, EditItemState> {
         item: Item(id: '', name: '', quantity: -1),
       ),
     );
+  }
+
+  void _onItemDeleted(ItemDeleted event, Emitter<EditItemState> emit) {
+    final item = event.item;
+    _foodSpacesRepository.deleteItem(item, _foodSpace);
   }
 
   void _onItemChanged(ItemChanged event, Emitter<EditItemState> emit) {

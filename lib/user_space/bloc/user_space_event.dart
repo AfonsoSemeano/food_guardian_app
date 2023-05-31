@@ -17,3 +17,10 @@ class ItemQuantityButtonClicked extends UserSpaceEvent {
   final Item item;
   final FoodSpace? currentFoodSpace;
 }
+
+class ItemDeleteButtonClicked extends UserSpaceEvent {
+  const ItemDeleteButtonClicked(this.item, this.currentFoodSpace);
+
+  final Item item;
+  final FoodSpace? currentFoodSpace;
+}

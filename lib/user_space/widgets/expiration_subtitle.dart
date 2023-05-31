@@ -21,8 +21,8 @@ class _ExpirationSubtitle extends StatelessWidget {
       children: [
         Icon(
           _hourglassColor == _HourglassColor.empty
-              ? MdiIcons.timerSandEmpty
-              : MdiIcons.timerSandFull,
+              ? MdiIcons.clock
+              : MdiIcons.clock,
           color: _hourglassColor == _HourglassColor.empty
               ? Colors.black
               : _hourglassColor == _HourglassColor.green

@@ -10,9 +10,15 @@ class UserSpaceBloc extends Bloc<UserSpaceEvent, UserSpaceState> {
       : _foodSpacesRepository = foodSpacesRepository,
         super(UserSpaceState()) {
     on<ItemQuantityButtonClicked>(_onItemQuantityButtonClicked);
+    on<ItemDeleteButtonClicked>(_onItemDeleteButtonClicked);
   }
 
   final FoodSpacesRepository _foodSpacesRepository;
+
+  void _onItemDeleteButtonClicked(
+      ItemDeleteButtonClicked event, Emitter<UserSpaceState> emit) {
+    _foodSpacesRepository.deleteItem(event.item, event.currentFoodSpace);
+  }
 
   void _onItemQuantityButtonClicked(
       ItemQuantityButtonClicked event, Emitter<UserSpaceState> emit) {

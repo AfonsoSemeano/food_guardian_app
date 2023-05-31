@@ -24,6 +24,7 @@ class SectionsBar extends StatelessWidget {
             TabBar(
               controller: _tabController,
               isScrollable: true,
+              indicatorColor: Theme.of(context).colorScheme.secondary,
               tabs: [
                 ..._sections.map((e) => Tab(text: e.name)).toList(),
               ],

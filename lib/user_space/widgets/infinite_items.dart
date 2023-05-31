@@ -28,18 +28,21 @@ class _InfiniteItemsState extends State<InfiniteItems> {
 
   Future<void> _fetchPage(Item? pageKey) async {
     try {
-      final newItems =
-          await context.read<FoodSpacesRepository>().fetchMoreItems(
-                section: widget.section,
-                lastItem: pageKey,
-                currentFoodSpace: context.read<HomeBloc>().state.foodSpace,
-              );
-      final isLastPage = newItems.length < _pageSize;
-      if (isLastPage) {
-        _pagingController.appendLastPage(newItems);
-      } else {
-        final nextPageKey = newItems.last;
-        _pagingController.appendPage(newItems, nextPageKey);
+      if (mounted) {
+        final newItems =
+            await context.read<FoodSpacesRepository>().fetchMoreItems(
+                  section: widget.section,
+                  lastItem: pageKey,
+                  currentFoodSpace: context.read<HomeBloc>().state.foodSpace,
+                );
+
+        final isLastPage = newItems.length < _pageSize;
+        if (isLastPage) {
+          _pagingController.appendLastPage(newItems);
+        } else {
+          final nextPageKey = newItems.last;
+          _pagingController.appendPage(newItems, nextPageKey);
+        }
       }
     } catch (error) {
       _pagingController.error = error;
@@ -51,20 +54,27 @@ class _InfiniteItemsState extends State<InfiniteItems> {
       // Don't worry about displaying progress or error indicators on screen; the
       // package takes care of that. If you want to customize them, use the
       // [PagedChildBuilderDelegate] properties.
-      PagedListView<Item?, Item>(
-        pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<Item>(
-          firstPageProgressIndicatorBuilder: (context) => Scaffold(
-            body: Container(
-              alignment: Alignment.center,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
+      RefreshIndicator(
+        onRefresh: () {
+          _pagingController.refresh();
+          return Future(() => null);
+        },
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        child: PagedListView<Item?, Item>(
+          pagingController: _pagingController,
+          builderDelegate: PagedChildBuilderDelegate<Item>(
+            firstPageProgressIndicatorBuilder: (context) => Scaffold(
+              body: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             ),
+            itemBuilder: (context, item, index) => ItemEntry(item: item),
           ),
-          itemBuilder: (context, item, index) => ItemEntry(item: item),
         ),
       );
 
