@@ -4,5 +4,6 @@
     "crazy": "crazy",
     "@counterAppBarTitle": {
         "description": "Text shown in the AppBar of the Counter Page"
-    }
+    },
+    "submit": "Submit translated"
 }

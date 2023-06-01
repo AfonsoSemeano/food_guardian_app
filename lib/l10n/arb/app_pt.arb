@@ -1,0 +1,9 @@
+{
+    "@@locale": "pt",
+    "counterAppBarTitle": "Counter",
+    "crazy": "crazy",
+    "@counterAppBarTitle": {
+        "description": "Texto mostrado em portugues"
+    },
+    "submit": "Submeter"
+}

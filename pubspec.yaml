@@ -45,4 +45,4 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/
+    - assets/food_guardian_icon.png

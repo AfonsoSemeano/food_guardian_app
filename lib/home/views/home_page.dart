@@ -54,8 +54,10 @@ class _HomePageState extends State<HomePage>
             backgroundColor: Theme.of(context).primaryColor,
           ),
           body: state.isFetching
-              ? const Center(
-                  child: CircularProgressIndicator(),
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 )
               : PageView(
                   controller: _pageController,
