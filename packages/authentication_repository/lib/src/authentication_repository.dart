@@ -23,14 +23,18 @@ class AuthenticationRepository {
       if (firebaseUser == null) {
         return User.empty;
       } else {
-        final userDataSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(firebaseUser.uid)
-            .get();
+        try {
+          final userDataSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .get();
 
-        final user =
-            User.fromSnapshotAndFirebaseUser(userDataSnapshot, firebaseUser);
-        return user;
+          final user =
+              User.fromSnapshotAndFirebaseUser(userDataSnapshot, firebaseUser);
+          return user;
+        } catch (e) {
+          throw FirebaseSessionNotFound();
+        }
       }
     });
   }
@@ -57,7 +61,8 @@ class AuthenticationRepository {
 
   /// Performs operations which can throw errors.
   /// Must be wrapped in a try-catch block to handle exceptions.
-  Future<void> signUp({required String email, required String password}) async {
+  Future<String> signUp(
+      {required String email, required String password}) async {
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -69,6 +74,9 @@ class AuthenticationRepository {
         'birthdayDate': null,
         'gender': null,
       });
+      final foodSpacesRef = FirebaseFirestore.instance.collection('foodSpaces');
+      final newFoodSpaceRef = foodSpacesRef.doc();
+      return userCredential.user?.uid as String;
     } on firebase_auth.FirebaseAuthException catch (error) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(error.code);
     } catch (_) {
@@ -94,6 +102,15 @@ class AuthenticationRepository {
 
 abstract class AuthenticationRepositoryFailure implements Exception {
   String get message => '';
+}
+
+class FirebaseSessionNotFound implements AuthenticationRepositoryFailure {
+  const FirebaseSessionNotFound(
+      [this.message =
+          'Internet not found. If you are still connected, contact the developers.']);
+
+  @override
+  final String message;
 }
 
 class SignUpWithEmailAndPasswordFailure

@@ -3,15 +3,19 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/rendering.dart';
 import 'package:food_control_app/authentication/models/models.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 import 'package:formz/formz.dart';
 
 part 'authentication_state.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
-  AuthenticationCubit(this._authenticationRepository)
-      : super(const AuthenticationState());
+  AuthenticationCubit(
+    this._authenticationRepository,
+    this._foodSpacesRepository,
+  ) : super(const AuthenticationState());
 
   final AuthenticationRepository _authenticationRepository;
+  final FoodSpacesRepository _foodSpacesRepository;
 
   void authTypeChanged({required bool isLogin}) {
     emit(
@@ -60,15 +64,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     try {
       if (state.isLogin) {
         await _authenticationRepository.loginWithEmailAndPassword(
-          email: state.email.value,
+          email: state.email.value.trim(),
           password: state.password.value,
         );
         emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
       } else {
-        await _authenticationRepository.signUp(
+        final userId = await _authenticationRepository.signUp(
           email: state.email.value,
           password: state.password.value,
         );
+        // await _foodSpacesRepository.createDefaultFoodSpace(userId);
         // emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
       }
     } on AuthenticationRepositoryFailure catch (error) {

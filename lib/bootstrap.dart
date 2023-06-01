@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_control_app/authentication/cubit/authentication_cubit.dart';
 import 'package:food_control_app/firebase_options.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();

@@ -1,0 +1,21 @@
+name: food_spaces_repository
+description: A repository connected with Firebase for operations related to Food Spaces.
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+
+dependencies:
+  cache:
+    path: ../cache
+  authentication_repository:
+    path: ../authentication_repository
+  firebase_core: ^2.12.0
+  firebase_core_platform_interface: ^4.8.0
+  cloud_firestore: ^4.7.0
+  shared_preferences: ^2.1.1
+  equatable: ^2.0.5
+  uuid: ^3.0.7
+  firebase_storage: ^11.2.1
+  collection: ^1.17.0

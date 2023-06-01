@@ -23,7 +23,16 @@ dependencies:
   meta: ^1.8.0
   authentication_repository:
     path: packages/authentication_repository
+  food_spaces_repository:
+    path: packages/food_spaces_repository
   accordion: ^2.5.1
+  collection: ^1.17.0
+  image_picker: ^0.8.7+5
+  image_cropper: ^4.0.1
+  material_design_icons_flutter: 6.0.7096
+  infinite_scroll_pagination: ^3.2.0
+  http: ^0.13.6
+  path_provider: ^2.0.15
 
 dev_dependencies:
   bloc_test: ^9.1.1
@@ -36,4 +45,4 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/
+    - assets/food_guardian_icon.png

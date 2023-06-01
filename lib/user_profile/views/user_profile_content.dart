@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/user_profile/cubit/user_profile_cubit.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 
 class UserProfileContent extends StatelessWidget {
   const UserProfileContent({super.key});
@@ -13,13 +14,20 @@ class UserProfileContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserProfileCubit(
-          authenticationRepository: context.read<AuthenticationRepository>()),
+        authenticationRepository: context.read<AuthenticationRepository>(),
+        foodSpacesRepository: context.read<FoodSpacesRepository>(),
+      ),
       child: Column(
         children: [
           Accordion(
             headerBorderRadius: 0,
-            contentBorderColor: Colors.grey,
             scaleWhenAnimating: false,
+            headerPadding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            rightIcon: Icon(
+              Icons.keyboard_arrow_down,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
             children: [
               AccordionSection(
                 paddingBetweenClosedSections: 2,
@@ -63,6 +71,11 @@ class _EndSessionButton extends StatelessWidget {
         onPressed: () {
           context.read<UserProfileCubit>().logOut();
         },
+        style: ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll<Color>(
+            Theme.of(context).colorScheme.secondary,
+          ),
+        ),
         child: Text('End Session'));
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_control_app/authentication/cubit/authentication_cubit.dart';
+import 'package:food_spaces_repository/food_spaces_repository.dart';
 import 'views.dart';
 
 class AuthenticationPage extends StatelessWidget {
@@ -18,8 +19,9 @@ class AuthenticationPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: BlocProvider(
-          create: (context) =>
-              AuthenticationCubit(context.read<AuthenticationRepository>()),
+          create: (context) => AuthenticationCubit(
+              context.read<AuthenticationRepository>(),
+              context.read<FoodSpacesRepository>()),
           child: Center(
             child: AuthenticationForm(),
           ),
