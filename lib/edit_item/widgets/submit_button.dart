@@ -21,7 +21,10 @@ class _SubmitButton extends StatelessWidget {
                   } else {
                     print('is create mode');
                     context.read<EditItemBloc>().add(const ItemAdded());
-                    Navigator.of(context).push(
+                    context
+                        .read<EditItemBloc>()
+                        .add(const ClearStateRequested());
+                    Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) => EditItemPage(
                           isCreateMode: true,

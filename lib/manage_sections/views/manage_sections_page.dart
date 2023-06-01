@@ -40,7 +40,7 @@ class _ManageSectionsPageState extends State<ManageSectionsPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Manage Sessions',
+          'Manage Sections',
           style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
         backgroundColor: Theme.of(context).primaryColor,
