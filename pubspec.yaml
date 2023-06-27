@@ -27,7 +27,7 @@ dependencies:
     path: packages/food_spaces_repository
   accordion: ^2.5.1
   collection: ^1.17.0
-  image_picker: ^0.8.7+5
+  image_picker: ^1.0.0
   image_cropper: ^4.0.1
   material_design_icons_flutter: 6.0.7096
   infinite_scroll_pagination: ^3.2.0
